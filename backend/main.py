@@ -1,22 +1,17 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-
+import pymysql
 # Tabel erstellen
 class Hero(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+    name: str = Field(index=True, max_length=100)
     age: int | None = Field(default=None, index=True)
-    secret_name: str
+    secret_name: str = Field(max_length=100)
 
-# sqlite db definieren
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-
-# sql connection wird deffiniert
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
-
+# mariadb definieren
+mariadb_url = f"mariadb+pymysql://root:@localhost:3306/herodb"
+engine = create_engine(mariadb_url)
 # funktion um db und tables zu erstellen
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
