@@ -1,0 +1,30 @@
+POST http://localhost:8000/heroes/
+Content-Type: application/json
+
+{
+  "name" : "Spiderman",
+  "age" : 22,
+  "secret_name" : "Peter Parker"
+}
+
+###
+###
+
+POST http://localhost:8000/heroes/
+content-type: application/json
+
+{
+  "name": "Spiderman",
+  "age": 22,
+  "secret_name": "Peter Parker"
+}
+
+###
+
+DELETE http://localhost:8000/heroes/2
+
+###
+
+GET http://localhost:8000/heroes/2
+
+###
