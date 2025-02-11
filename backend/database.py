@@ -11,7 +11,7 @@ class Hero(SQLModel, table=True):
 # mariadb definieren
 mariadb_url = f"mariadb+pymysql://root:@localhost:3306/herodb"
 engine = create_engine(mariadb_url)
-# funktion um db und tables zu erstellen
+# funktion um tables zu erstellen / laden
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
