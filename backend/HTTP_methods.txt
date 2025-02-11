@@ -1,0 +1,10 @@
+POST: to create data.
+GET: to read data.
+PUT: to update data.
+DELETE: to delete data.
+OPTIONS
+HEAD
+PATCH
+TRACE
+
+FastAPI geht die Routes von oben bis unten durch: https://fastapi.tiangolo.com/tutorial/path-params/#order-matters
