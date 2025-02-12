@@ -21,7 +21,7 @@ engine = create_engine(mariadb_url)
 
 # funktion tables zu erstellen / laden
 def create_db_and_tables():
-#    SQLModel.metadata.drop_all(engine)  # Bestehende Tabellen löschen nur zum debuggen nutzen
+#    SQLModel.metadata.drop_all(engine)  # Bestehende Tabellen löschen nur nutzen wenn neue Attribute hinzugefügt werden
     SQLModel.metadata.create_all(engine)  # Tabellen neu erstellen
 
 # sql connection wird etabliert
