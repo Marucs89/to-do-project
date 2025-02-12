@@ -1,0 +1,2 @@
+TODO: Database Server erstellen und VPN verbindung einrichten
+TODO: Wie funktionieren beziehungen?

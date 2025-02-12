@@ -54,8 +54,3 @@ def read_todos(tagid: int, session: SessionDep):
     results = session.exec(statement)
     for x in results:
         return x
-
-# funktioniert nicht
-@app.get("/heroes/team/")
-def read_heroes_team(session: SessionDep):
-    return Hero.team

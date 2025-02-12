@@ -6,9 +6,9 @@ POST http://localhost:8000/heroes/
 Content-Type: application/json
 
 {
-  "name" : "Spiderman",
-  "age" : 22,
-  "secret_name" : "Peter Parker",
+  "name" : "Spiderman2",
+  "age" : 222,
+  "secret_name" : "Peter Parker2",
   "team_id" : 1
 }
 
