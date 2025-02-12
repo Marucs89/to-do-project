@@ -8,7 +8,7 @@ class Hero(SQLModel, table=True):
     age: int | None = Field(default=None, index=True)
     secret_name: str = Field(max_length=100)
 
-# mariadb definieren
+#f"mariadb+pymysql://if0_38298610:ToDoProjekt2025@sql300.infinityfree.com/if0_38298610_todoprojekt"
 mariadb_url = f"mariadb+pymysql://root:@localhost:3306/herodb"
 engine = create_engine(mariadb_url)
 # die Databse herodb sollte erstellt werden damit der table erstellt wird
