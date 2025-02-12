@@ -1,4 +1,4 @@
-GET http://localhost:8000/todos/1
+GET http://localhost:8000/todos/?tagid=1
 Accept: application/json
 
 ###
@@ -8,7 +8,8 @@ Content-Type: application/json
 {
   "name" : "Spiderman",
   "age" : 22,
-  "secret_name" : "Peter Parker"
+  "secret_name" : "Peter Parker",
+  "team_id" : 1
 }
 
 ###

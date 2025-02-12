@@ -47,11 +47,15 @@ def delete_hero(hero_id: int, session: SessionDep):
     session.commit()
     return {"ok": True}
 
-# Eine Get anfarage mit einer query (tagid oder type) parameter
-
-@app.get("/todos/{tagid}")
+# get Anfrage mit query: tagid
+@app.get("/todos/")
 def read_todos(tagid: int, session: SessionDep):
-        statement = select(Hero).where(Hero.id == tagid)
-        results = session.exec(statement)
-        for x in results:
-            return x
+    statement = select(Hero).where(Hero.id == tagid)
+    results = session.exec(statement)
+    for x in results:
+        return x
+
+# funktioniert nicht
+@app.get("/heroes/team/")
+def read_heroes_team(session: SessionDep):
+    return Hero.team
