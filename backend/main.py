@@ -7,7 +7,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI()
 
-# wenn Programm gestartet wird wird db und tables erstellt / geladen
+# wenn Programm gestartet wird, werden tables erstellt / geladen
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
