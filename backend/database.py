@@ -3,6 +3,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine
 import pymysql
 # Tabel erstellen
 class Hero(SQLModel, table=True):
+# wenn
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(index=True, max_length=100)
     age: int | None = Field(default=None, index=True)
@@ -11,7 +12,7 @@ class Hero(SQLModel, table=True):
 #f"mariadb+pymysql://if0_38298610:ToDoProjekt2025@sql300.infinityfree.com/if0_38298610_todoprojekt"
 mariadb_url = f"mariadb+pymysql://root:@localhost:3306/herodb"
 engine = create_engine(mariadb_url)
-# die Databse herodb sollte erstellt werden damit der table erstellt wird
+
 # funktion tables zu erstellen / laden
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)

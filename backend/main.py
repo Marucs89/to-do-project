@@ -20,7 +20,6 @@ def create_hero(hero: Hero, session: SessionDep) -> Hero:
     session.refresh(hero)
     return hero
 
-
 @app.get("/heroes/")
 def read_heroes(
     session: SessionDep,
@@ -47,3 +46,12 @@ def delete_hero(hero_id: int, session: SessionDep):
     session.delete(hero)
     session.commit()
     return {"ok": True}
+
+# Eine Get anfarage mit einer query (tagid oder type) parameter
+
+@app.get("/todos/{tagid}")
+def read_todos(tagid: int, session: SessionDep):
+        statement = select(Hero).where(Hero.id == tagid)
+        results = session.exec(statement)
+        for x in results:
+            return x
