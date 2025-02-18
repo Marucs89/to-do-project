@@ -1,4 +1,4 @@
-GET http://localhost:8000/todos/?tagid=1
+GET http://localhost:8000/todos?tagid=1
 Accept: application/json
 
 ###

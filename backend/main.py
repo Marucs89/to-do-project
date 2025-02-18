@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import select
-from database import Session, get_session, create_db_and_tables, Hero
+from database import Session, get_session, create_db_and_tables, Hero, Teams
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -47,8 +47,15 @@ def delete_hero(hero_id: int, session: SessionDep):
     session.commit()
     return {"ok": True}
 
+@app.post("/teams/")
+def create_team(team: Teams, session: SessionDep) -> Teams:
+    session.add(team)
+    session.commit()
+    session.refresh(team)
+    return team
+
 # get Anfrage mit query: tagid
-@app.get("/todos/")
+@app.get("/todos")
 def read_todos(tagid: int, session: SessionDep):
     statement = select(Hero).where(Hero.id == tagid)
     results = session.exec(statement)
