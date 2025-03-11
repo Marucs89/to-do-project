@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import select
-from database import Session, get_session, create_db_and_tables, Hero, Teams, ToDo
+from database import Session, get_session, create_db_and_tables, Hero, Teams, ToDo, Topics
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -58,7 +58,7 @@ def create_team(team: Teams, session: SessionDep) -> Teams:
 @app.get("/todo")
 def read_todos(todoid:int, session: SessionDep):
     # Optionale Filterung nach ID
-    statement = select(ToDo).where(ToDo.ToDo_ID == todoid)
+    statement = select(ToDo).where(ToDo.todo_id == todoid)
     todos = session.exec(statement).all()
 
     # Liste mit erweiterten Informationen erstellen
@@ -68,20 +68,30 @@ def read_todos(todoid:int, session: SessionDep):
         arbeiter_liste = [
             {
                 "mitarbeiter_id": link.arbeiter.mitarbeiter_id,
-                "name": link.arbeiter.Name,
-                "vorname": link.arbeiter.Vorname
+                "name": link.arbeiter.name,
+                "lastname": link.arbeiter.lastname
             }
             for link in todo.bearbeiter_links
         ]
 
         # ToDo mit verknüpften Arbeitern
         todo_dict = {
-            "todo_id": todo.ToDo_ID,
-            "name": todo.Name,
-            "details": todo.Details,
-            "deadline": todo.Deadline,
+            "todo_id": todo.todo_id,
+            "name": todo.name,
+            "details": todo.description,
+            "deadline": todo.deadline,
             "arbeiter": arbeiter_liste
         }
         result.append(todo_dict)
 
     return result
+
+# get anfrage todos-by-topic?topic=1 -> topic table, premade topics später post request
+@app.get("/todos-by-topic")
+def read_todos_by_topic(topic: str, session: SessionDep):
+    statement = select(Topics.topic_id).where(Topics.name == topic)
+    topicid = session.exec(statement).all()
+    statement = select(ToDo).where(ToDo.topic_id == topicid[0])
+    todos = session.exec(statement).all()
+    for todo in todos:
+        return todo
