@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import select
-from database import Session, get_session, create_db_and_tables, Hero
+from database import Session, get_session, create_db_and_tables, Hero, Teams, ToDo
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -19,7 +19,6 @@ def create_hero(hero: Hero, session: SessionDep) -> Hero:
     session.commit()
     session.refresh(hero)
     return hero
-
 
 @app.get("/heroes/")
 def read_heroes(
@@ -47,3 +46,42 @@ def delete_hero(hero_id: int, session: SessionDep):
     session.delete(hero)
     session.commit()
     return {"ok": True}
+
+@app.post("/teams/")
+def create_team(team: Teams, session: SessionDep) -> Teams:
+    session.add(team)
+    session.commit()
+    session.refresh(team)
+    return team
+
+# get Anfrage mit query: tagid
+@app.get("/todo")
+def read_todos(todoid:int, session: SessionDep):
+    # Optionale Filterung nach ID
+    statement = select(ToDo).where(ToDo.ToDo_ID == todoid)
+    todos = session.exec(statement).all()
+
+    # Liste mit erweiterten Informationen erstellen
+    result = []
+    for todo in todos:
+        # Bei Bedarf explizites Laden der verknüpften Daten
+        arbeiter_liste = [
+            {
+                "mitarbeiter_id": link.arbeiter.mitarbeiter_id,
+                "name": link.arbeiter.Name,
+                "vorname": link.arbeiter.Vorname
+            }
+            for link in todo.bearbeiter_links
+        ]
+
+        # ToDo mit verknüpften Arbeitern
+        todo_dict = {
+            "todo_id": todo.ToDo_ID,
+            "name": todo.Name,
+            "details": todo.Details,
+            "deadline": todo.Deadline,
+            "arbeiter": arbeiter_liste
+        }
+        result.append(todo_dict)
+
+    return result
