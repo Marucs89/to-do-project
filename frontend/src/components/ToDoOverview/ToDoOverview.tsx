@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./ToDoOverview.css";
+import { getToDoDataForTopic } from "../../services/api";
 
 enum Topics {
   Freizeit = "Freizeit",
@@ -9,39 +10,54 @@ enum Topics {
 }
 
 export default function ToDoOverview() {
-  const [topic, setTopic] = useState<Topics>();
-  
+  const [toDoData, setToDoData] = useState();
+  const [noToDos, setNoToDos] = useState<boolean>();
+  console.log("To Do Data: ", toDoData);
   return (
     <div id='root'>
       <div id='tabBar'>
         <button
-          onClick={() => {
-            setTopic(Topics.Freizeit);
+          onClick={async () => {
+            try {
+              const freizeitToDoData = await getToDoDataForTopic(
+                Topics.Freizeit
+              );
+              setToDoData(freizeitToDoData);
+            } catch (err: unknown) {
+              if (err === "No data for topic found!") {
+                setNoToDos(true);
+              }
+              console.log("ERROR: ", err);
+            }
           }}
         >
           Freizeit
         </button>
         <button
-          onClick={() => {
-            setTopic(Topics.Arbeit);
+          onClick={async () => {
+            const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
+            setToDoData(arbeitToDoData);
           }}
         >
           Arbeit
         </button>
         <button
-          onClick={() => {
-            setTopic(Topics.Schule);
+          onClick={async () => {
+            const schuleToDoData = await getToDoDataForTopic(Topics.Schule);
+            setToDoData(schuleToDoData);
           }}
         >
           Schule
         </button>
         <button
-          onClick={() => {
-            setTopic(Topics.Sport);
+          onClick={async () => {
+            const sportToDoData = await getToDoDataForTopic(Topics.Sport);
+            setToDoData(sportToDoData);
           }}
         >
           Sport
         </button>
+        
       </div>
     </div>
   );
