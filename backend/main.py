@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import select
-from database import Session, get_session, create_db_and_tables, Hero, Teams, ToDo, Topics
+from sqlmodel import select, insert
+from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -12,49 +12,32 @@ app = FastAPI()
 def on_startup():
     create_db_and_tables()
 
-
-@app.post("/heroes/")
-def create_hero(hero: Hero, session: SessionDep) -> Hero:
-    session.add(hero)
-    session.commit()
-    session.refresh(hero)
-    return hero
-
-@app.get("/heroes/")
-def read_heroes(
-    session: SessionDep,
-    offset: int = 0,
-    limit: Annotated[int, Query(le=100)] = 100,
-) -> list[Hero]:
-    heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
-    return heroes
-
-
-@app.get("/heroes/{hero_id}")
-def read_hero(hero_id: int, session: SessionDep) -> Hero:
-    hero = session.get(Hero, hero_id)
-    if not hero:
-        raise HTTPException(status_code=404, detail="Hero not found")
-    return hero
-
-
-@app.delete("/heroes/{hero_id}")
-def delete_hero(hero_id: int, session: SessionDep):
-    hero = session.get(Hero, hero_id)
-    if not hero:
-        raise HTTPException(status_code=404, detail="Hero not found")
-    session.delete(hero)
-    session.commit()
-    return {"ok": True}
-
-@app.post("/teams/")
-def create_team(team: Teams, session: SessionDep) -> Teams:
-    session.add(team)
-    session.commit()
-    session.refresh(team)
-    return team
-
 # get Anfrage mit query: tagid
+from pydantic import BaseModel
+
+
+class ToDoCreate(BaseModel):
+    name: str
+    description: str | None = None
+    deadline: str | None = None
+    topic_id: int | None = None
+    status_id: int | None = None
+
+
+@app.post("/todo")
+def create_todo(todo_data: ToDoCreate, arbeiterid: int, session: SessionDep):
+    try:
+        todo = ToDo(**todo_data.model_dump())
+        session.add(todo)
+        session.commit()
+        session.refresh(todo)
+        neuer_bearbeiter = Bearbeiter(todo_id=todo.todo_id, mitarbeiter_id=arbeiterid)
+        session.add(neuer_bearbeiter)
+        session.commit()
+        return {"status": "success", "todo": todo}
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des ToDos: {str(e)}")
 @app.get("/todo")
 def read_todos(todoid:int, session: SessionDep):
     # Optionale Filterung nach ID
@@ -89,9 +72,45 @@ def read_todos(todoid:int, session: SessionDep):
 # get anfrage todos-by-topic?topic=1 -> topic table, premade topics später post request
 @app.get("/todos-by-topic")
 def read_todos_by_topic(topic: str, session: SessionDep):
+    # Zuerst die topic_id finden
     statement = select(Topics.topic_id).where(Topics.name == topic)
-    topicid = session.exec(statement).all()
-    statement = select(ToDo).where(ToDo.topic_id == topicid[0])
+    result = session.exec(statement).first()
+
+    # Prüfen, ob ein Topic gefunden wurde
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht gefunden")
+
+    topic_id = result
+
+    # Alle ToDos mit diesem Topic laden
+    statement = select(ToDo).where(ToDo.topic_id == topic_id)
     todos = session.exec(statement).all()
+
+    # Ergebnisliste erstellen
+    result = []
     for todo in todos:
-        return todo
+        # Topic und Status als einzelne Dictionaries, nicht als Listen
+        topic_info = {"topic_id": todo.topic.topic_id, "name": todo.topic.name}
+        status_info = {"status_id": todo.status.status_id, "name": todo.status.name}
+
+        arbeiter_liste = [
+            {
+                "mitarbeiter_id": link.arbeiter.mitarbeiter_id,
+                "name": link.arbeiter.name,
+                "lastname": link.arbeiter.lastname
+            }
+            for link in todo.bearbeiter_links
+        ]
+
+        todo_dict = {
+            "todo_id": todo.todo_id,
+            "name": todo.name,
+            "details": todo.description,
+            "deadline": todo.deadline,
+            "arbeiter": arbeiter_liste,
+            "topic": topic_info,  # Einzelnes Dictionary, keine Liste
+            "status": status_info  # Einzelnes Dictionary, keine Liste
+        }
+        result.append(todo_dict)
+
+    return result
