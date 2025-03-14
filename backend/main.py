@@ -59,7 +59,8 @@ def read_todos(todoid:int, session: SessionDep):
             {
                 "mitarbeiter_id": link.arbeiter.mitarbeiter_id,
                 "name": link.arbeiter.name,
-                "lastname": link.arbeiter.lastname
+                "lastname": link.arbeiter.lastname,
+                "email": link.arbeiter.email
             }
             for link in todo.bearbeiter_links
         ]
