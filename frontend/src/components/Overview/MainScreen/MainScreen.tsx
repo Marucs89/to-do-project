@@ -1,8 +1,9 @@
 import { useState } from "react";
 import "./MainScreen.css";
 import { getToDoDataForTopic } from "../../../services/api";
+import TopicTabs from "./TopicTabs/TopicTabs";
 
-enum Topics {
+export enum Topics {
   Freizeit = "Freizeit",
   Arbeit = "Arbeit",
   Schule = "Schule",
@@ -10,54 +11,14 @@ enum Topics {
 }
 
 export default function MainScreen() {
+  //TODO: Data Schema definieren
   const [toDoData, setToDoData] = useState();
-  const [noToDos, setNoToDos] = useState<boolean>();
+  const [noToDos, setNoToDos] = useState(false);
   console.log("To Do Data: ", toDoData);
   return (
     <div id='root'>
-      <div id='tabBar'>
-        <button
-          onClick={async () => {
-            try {
-              const freizeitToDoData = await getToDoDataForTopic(
-                Topics.Freizeit
-              );
-              setToDoData(freizeitToDoData);
-            } catch (err: unknown) {
-              if (err === "No data for topic found!") {
-                setNoToDos(true);
-              }
-              console.log("ERROR: ", err);
-            }
-          }}
-        >
-          Freizeit
-        </button>
-        <button
-          onClick={async () => {
-            const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
-            setToDoData(arbeitToDoData);
-          }}
-        >
-          Arbeit
-        </button>
-        <button
-          onClick={async () => {
-            const schuleToDoData = await getToDoDataForTopic(Topics.Schule);
-            setToDoData(schuleToDoData);
-          }}
-        >
-          Schule
-        </button>
-        <button
-          onClick={async () => {
-            const sportToDoData = await getToDoDataForTopic(Topics.Sport);
-            setToDoData(sportToDoData);
-          }}
-        >
-          Sport
-        </button>
-      </div>
+      <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
+      
     </div>
   );
 }

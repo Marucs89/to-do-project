@@ -1,0 +1,26 @@
+#root{
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+#tabBar{
+  display: flex;
+  justify-content: center;
+  margin-top: 2%;
+  height: 5%;
+}
+
+button{
+  width: 250px;
+  height: 100%;
+  border: 1px solid black;
+}
+button:hover {
+  background-color: white;
+  cursor: pointer;
+}
+button:focus {
+  background-color: white;
+}
