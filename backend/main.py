@@ -125,27 +125,32 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     return result
 
 # post oder put status ändern auf der To_Do liste
-class status_update(BaseModel):
+class StatusTopicUpdate(BaseModel):
     todo_id: int
-    status_id: int
+    topic_id: int | None = None
+    status_id: int | None = None
 @app.put("/change-status")
-def update_status(new_status: status_update, session: SessionDep):
-    # nach dem ToDo suchen
-    statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
-    results = session.exec(statement).all()
-    todo = results[0]
-    print(todo)
-    # hat das ToDo einen Status?
-    if todo.status_id == None:
-        raise HTTPException(status_code=404, detail="ToDo hat keinen Status")
-    # Status ändern
-    todo.status_id = new_status.status_id
-    session.add(todo)
-    session.commit()
-    session.refresh(todo)
+def update_status(new_status: StatusTopicUpdate, session: SessionDep):
+    if new_status.status_id is not None:
+        statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
+        results = session.exec(statement).all()
+        change_todo = results[0]
+        change_todo.status_id = new_status.status_id
+        session.add(change_todo)
+        session.commit()
+        session.refresh(change_todo)
+    if new_status.topic_id is not None:
+        statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
+        results = session.exec(statement).all()
+        change_topic = results[0]
+        change_topic.topic_id = new_status.topic_id
+        session.add(change_topic)
+        session.commit()
+        session.refresh(change_topic)
+    else:
+        raise HTTPException(status_code=404, detail=f"false input")
     return {"status": "success"}
 # http errors hinzufügen
-# topic ändern?
 # arbeiter hinzufügen
 # topics hinzufügen
 # arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen
