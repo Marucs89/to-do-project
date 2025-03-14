@@ -18,7 +18,7 @@ class Arbeiter(SQLModel, table=True):
     mitarbeiter_id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=100)
     lastname: str = Field(max_length=100)
-    contact: str | None = Field(max_length=100)
+    email: str | None = Field(max_length=100)
     todo_links: list["Bearbeiter"] = Relationship(back_populates="arbeiter")
 
 class Bearbeiter(SQLModel, table=True):
