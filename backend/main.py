@@ -1,8 +1,9 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import select, insert
-from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter
+from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter
 from datetime import datetime
+from pydantic import BaseModel
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -13,10 +14,8 @@ app = FastAPI()
 def on_startup():
     create_db_and_tables()
 
-# get Anfrage mit query: tagid
-from pydantic import BaseModel
-
-
+# Post Anfragen:
+# Ein ToDo erstellen:
 class ToDoCreate(BaseModel):
     name: str
     description: str | None = None
@@ -29,7 +28,7 @@ def create_todo_helper(data:ToDoCreate):
     create_todos = ToDo(name = data.name, description= data.description, deadline = data.deadline, topic_id = data.topic_id, status_id = data.status_id)
     return create_todos
 
-@app.post("/todo")
+@app.post("/create-todo")
 def create_todo(todo_data: ToDoCreate, session: SessionDep):
     try:
         todo = create_todo_helper(todo_data)
@@ -43,6 +42,45 @@ def create_todo(todo_data: ToDoCreate, session: SessionDep):
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des ToDos: {str(e)}")
+
+# Ein Arbeiter erstellen:
+class CreateArbeiter(BaseModel):
+    name: str
+    lastname: str
+    email: str | None = None
+@app.post("/create-arbeiter")
+def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
+    try:
+        mitarbeiter = Arbeiter(
+            name=arbeiter_data.name,
+            lastname=arbeiter_data.lastname,
+            email=arbeiter_data.email
+        )
+        session.add(mitarbeiter)
+        session.commit()
+        session.refresh(mitarbeiter)
+        return {"status": "success"}
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des Arbeiter: {str(e)}")
+
+# Ein Topic erstellen:
+class CreateTopic(BaseModel):
+    name: str
+@app.post("/create-topic")
+def create_topic(topic_data: CreateTopic, session: SessionDep):
+    try:
+        topic = Topics(name=topic_data.name)
+        session.add(topic)
+        session.commit()
+        session.refresh(topic)
+        return {"status":"success"}
+    except Exception as e:
+        session.rollback()
+        raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen des Topics: {str(e)}")
+
+# Get Anfragen:
+# Alle Daten mit einer todo_id ausgeben:
 @app.get("/todos-by-id")
 def read_todos(todoid:int, session: SessionDep):
     # Optionale Filterung nach ID
@@ -77,7 +115,7 @@ def read_todos(todoid:int, session: SessionDep):
 
     return result
 
-# get anfrage todos-by-topic?topic=1 -> topic table, premade topics später post request
+# alle Daten eines topic ausgeben mit dem topic namen:
 @app.get("/todos-by-topic")
 def read_todos_by_topic(topic: str, session: SessionDep):
     # Zuerst die topic_id finden
@@ -124,15 +162,16 @@ def read_todos_by_topic(topic: str, session: SessionDep):
 
     return result
 
-# post oder put status ändern auf der To_Do liste
+# Put Anfragen:
+# die topic_id und/oder status_id eines ToDos ändern:
 class StatusTopicUpdate(BaseModel):
     todo_id: int
     topic_id: int | None = None
     status_id: int | None = None
-@app.put("/change-status")
+@app.put("/change-topic-status")
 def update_status(new_status: StatusTopicUpdate, session: SessionDep):
+    statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     if new_status.status_id is not None:
-        statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
         results = session.exec(statement).all()
         change_todo = results[0]
         change_todo.status_id = new_status.status_id
@@ -140,7 +179,6 @@ def update_status(new_status: StatusTopicUpdate, session: SessionDep):
         session.commit()
         session.refresh(change_todo)
     if new_status.topic_id is not None:
-        statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
         results = session.exec(statement).all()
         change_topic = results[0]
         change_topic.topic_id = new_status.topic_id
@@ -150,7 +188,7 @@ def update_status(new_status: StatusTopicUpdate, session: SessionDep):
     else:
         raise HTTPException(status_code=404, detail=f"false input")
     return {"status": "success"}
-# http errors hinzufügen
-# arbeiter hinzufügen
-# topics hinzufügen
+
+# Aufgaben:
 # arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen
+# http errors hinzufügen
