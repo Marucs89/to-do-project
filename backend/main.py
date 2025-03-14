@@ -39,7 +39,7 @@ def create_todo(todo_data: ToDoCreate, session: SessionDep):
         neuer_bearbeiter = Bearbeiter(todo_id=todo.todo_id, mitarbeiter_id=todo_data.arbeiter_id)
         session.add(neuer_bearbeiter)
         session.commit()
-        return {"status": "success", "todo": todo}
+        return {"status": "success"}
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des ToDos: {str(e)}")
@@ -123,3 +123,29 @@ def read_todos_by_topic(topic: str, session: SessionDep):
         result.append(todo_dict)
 
     return result
+
+# post oder put status ändern auf der To_Do liste
+class status_update(BaseModel):
+    todo_id: int
+    status_id: int
+@app.put("/change-status")
+def update_status(new_status: status_update, session: SessionDep):
+    # nach dem ToDo suchen
+    statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
+    results = session.exec(statement).all()
+    todo = results[0]
+    print(todo)
+    # hat das ToDo einen Status?
+    if todo.status_id == None:
+        raise HTTPException(status_code=404, detail="ToDo hat keinen Status")
+    # Status ändern
+    todo.status_id = new_status.status_id
+    session.add(todo)
+    session.commit()
+    session.refresh(todo)
+    return {"status": "success"}
+# http errors hinzufügen
+# topic ändern?
+# arbeiter hinzufügen
+# topics hinzufügen
+# arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen
