@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "./ToDoOverview.css";
-import { getToDoDataForTopic } from "../../services/api";
+import "./MainScreen.css";
+import { getToDoDataForTopic } from "../../../services/api";
 
 enum Topics {
   Freizeit = "Freizeit",
@@ -9,7 +9,7 @@ enum Topics {
   Sport = "Sport",
 }
 
-export default function ToDoOverview() {
+export default function MainScreen() {
   const [toDoData, setToDoData] = useState();
   const [noToDos, setNoToDos] = useState<boolean>();
   console.log("To Do Data: ", toDoData);
@@ -57,7 +57,6 @@ export default function ToDoOverview() {
         >
           Sport
         </button>
-        
       </div>
     </div>
   );
