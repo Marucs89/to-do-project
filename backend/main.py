@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Post Anfragen:
-# Ein ToDo erstellen:
+# BaseModel
 class ToDoCreate(BaseModel):
     name: str
     description: str | None = None
@@ -23,14 +23,32 @@ class ToDoCreate(BaseModel):
     topic_id: int | None = None
     status_id: int | None = None
     arbeiter_id: int | None = None
-
+class CreateArbeiter(BaseModel):
+    name: str
+    lastname: str
+    email: str | None = None
+class CreateTopicStatus(BaseModel):
+    name: str
+# Helper:
 def create_todo_helper(data:ToDoCreate):
     create_todos = ToDo(name = data.name, description= data.description, deadline = data.deadline, topic_id = data.topic_id, status_id = data.status_id)
     return create_todos
-
+def create_topic_status_helper(data, session):
+    try:
+        topic = Topics(name=data.name)
+        session.add(topic)
+        session.commit()
+        session.refresh(topic)
+        return {"status":"success"}
+    except Exception as e:
+        session.rollback()
+        raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen des Topics: {str(e)}")
+# API Anfragen:
+# ToDo erstellen:
 @app.post("/create-todo")
 def create_todo(todo_data: ToDoCreate, session: SessionDep):
     try:
+        # create_topic_status_helper auch hierfür nutzen und in create_helper umbenenn
         todo = create_todo_helper(todo_data)
         session.add(todo)
         session.commit()
@@ -42,12 +60,7 @@ def create_todo(todo_data: ToDoCreate, session: SessionDep):
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des ToDos: {str(e)}")
-
-# Ein Arbeiter erstellen:
-class CreateArbeiter(BaseModel):
-    name: str
-    lastname: str
-    email: str | None = None
+# Arbeiter erstellen:
 @app.post("/create-arbeiter")
 def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
     try:
@@ -64,22 +77,18 @@ def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Fehler beim Erstellen des Arbeiter: {str(e)}")
 
-# Ein Topic erstellen:
-class CreateTopic(BaseModel):
-    name: str
+# Topic erstellen:
 @app.post("/create-topic")
-def create_topic(topic_data: CreateTopic, session: SessionDep):
-    try:
-        topic = Topics(name=topic_data.name)
-        session.add(topic)
-        session.commit()
-        session.refresh(topic)
-        return {"status":"success"}
-    except Exception as e:
-        session.rollback()
-        raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen des Topics: {str(e)}")
+def create_topic(topic_data: CreateTopicStatus, session: SessionDep):
+    create_topic_status_helper(topic_data, session)
+# status erstellen:
+@app.post("/create-status")
+def create_status(status_data: CreateTopicStatus, session: SessionDep):
+    create_topic_status_helper(status_data, session)
 
 # Get Anfragen:
+# BaseModel:
+# Helper:
 def read_todo_helper(read_todo:list):
     result = []
     for todo in read_todo:
@@ -105,7 +114,7 @@ def read_todo_helper(read_todo:list):
         }
         result.append(todo_dict)
     return result
-
+# API Anfragen:
 # Alle Daten mit einer todo_id ausgeben:
 @app.get("/todos-by-id")
 def read_todos(todoid:int, session: SessionDep):
@@ -127,13 +136,12 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     return read_todo_helper(todos)
 
 # Put Anfragen:
-# die topic_id und/oder status_id eines ToDos ändern (in der ToDo Liste):
+# BaseModel:
 class TopicStatusUpdate(BaseModel):
     todo_id: int
     topic_id: int | None = None
     status_id: int | None = None
-
-
+# Helper:
 def change_topic_status_helper(session, statement, field_name, new_value):
     results = session.exec(statement).all()
     if not results:
@@ -144,7 +152,8 @@ def change_topic_status_helper(session, statement, field_name, new_value):
     session.commit()
     session.refresh(todo)
     return todo
-
+# API Anfragen:
+# die topic_id und/oder status_id eines ToDos ändern (in der ToDo Liste):
 @app.put("/change-topic-status")
 def update_status(new_status: TopicStatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
@@ -155,7 +164,6 @@ def update_status(new_status: TopicStatusUpdate, session: SessionDep):
     if new_status.status_id is None and new_status.topic_id is None:
         raise HTTPException(status_code=400, detail=f"false input")
     return {"status": "success"}
-
 # Aufgaben:
 # arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen beim Erstellen der tables
 # status erstellen
