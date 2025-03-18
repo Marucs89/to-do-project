@@ -111,6 +111,8 @@ def read_todo_helper(read_todo:list):
 def read_todos(todoid:int, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todoid)
     todos = session.exec(statement).all()
+    if not todos:
+        raise HTTPException(status_code=404, detail=f"Todo '{todoid}' nicht gefunden")
     return read_todo_helper(todos)
 
 # alle Daten eines topic ausgeben mit dem topic namen:
@@ -125,7 +127,7 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     return read_todo_helper(todos)
 
 # Put Anfragen:
-# die topic_id und/oder status_id eines ToDos ändern:
+# die topic_id und/oder status_id eines ToDos ändern (in der ToDo Liste):
 class TopicStatusUpdate(BaseModel):
     todo_id: int
     topic_id: int | None = None
@@ -151,9 +153,10 @@ def update_status(new_status: TopicStatusUpdate, session: SessionDep):
     if new_status.topic_id is not None:
         change_topic_status_helper(session, statement, 'topic_id', new_status.topic_id)
     if new_status.status_id is None and new_status.topic_id is None:
-        raise HTTPException(status_code=404, detail=f"false input")
+        raise HTTPException(status_code=400, detail=f"false input")
     return {"status": "success"}
 
 # Aufgaben:
-# arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen
-# http errors hinzufügen
+# arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen beim Erstellen der tables
+# status erstellen
+# arbeiter ändern
