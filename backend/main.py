@@ -125,6 +125,7 @@ def read_todos_by_topic(topic: str, session: SessionDep):
 class ArbeiterUpdate(BaseModel):
     todo_id: int
     mitarbeiter_id: int
+    new_mitarbeiter_id: int
 class TopicUpdate(BaseModel):
     todo_id: int
     topic_id: int
@@ -150,7 +151,7 @@ def change_helper(session, statement, field_name, new_value):
 def update_arbeiter(new_mitarbeiter: ArbeiterUpdate, session: SessionDep):
     statement = select(Bearbeiter).where(Bearbeiter.todo_id == new_mitarbeiter.todo_id
                                          and Bearbeiter.mitarbeiter_id == new_mitarbeiter.mitarbeiter_id)
-    return  change_helper(session, statement, 'mitarbeiter_id', new_mitarbeiter.mitarbeiter_id)
+    return  change_helper(session, statement, 'mitarbeiter_id', new_mitarbeiter.new_mitarbeiter_id)
 # topic in der todo liste ändern
 @app.put("/change-topic")
 def update_topic(new_topic: TopicUpdate, session: SessionDep):
