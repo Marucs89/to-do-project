@@ -67,7 +67,9 @@ def create_status(status_data: CreateTopicStatus, session: SessionDep):
     return create_helper(status, session)
 
 # Get Anfragen:
+
 # BaseModel:
+
 # Helper:
 def read_todo_helper(read_todo:list):
     result = []
@@ -94,8 +96,9 @@ def read_todo_helper(read_todo:list):
         }
         result.append(todo_dict)
     return result
+
 # API Anfragen:
-# Alle Daten mit einer todo_id ausgeben:
+# ToDos anhand der todo_id ausgeben
 @app.get("/todos-by-id")
 def read_todos(todoid:int, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todoid)
@@ -103,8 +106,7 @@ def read_todos(todoid:int, session: SessionDep):
     if not todos:
         raise HTTPException(status_code=404, detail=f"Todo '{todoid}' nicht gefunden")
     return read_todo_helper(todos)
-
-# alle Daten eines topic ausgeben mit dem topic namen:
+# ToDos anhand des Topic namen ausgeben
 @app.get("/todos-by-topic")
 def read_todos_by_topic(topic: str, session: SessionDep):
     statement = select(Topics.topic_id).where(Topics.name == topic)
@@ -116,14 +118,20 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     return read_todo_helper(todos)
 
 # Put Anfragen:
+
 # BaseModel:
-class TopicStatusUpdate(BaseModel):
+
+# arbeiter ändern
+class ArbeiterUpdate(BaseModel):
     todo_id: int
-    topic_id: int | None = None
-    status_id: int | None = None
+    mitarbeiter_id: int
 class TopicUpdate(BaseModel):
     todo_id: int
     topic_id: int
+class StatusUpdate(BaseModel):
+    todo_id: int
+    status_id: int
+
 # Helper:
 def change_helper(session, statement, field_name, new_value):
     results = session.exec(statement).all()
@@ -135,16 +143,23 @@ def change_helper(session, statement, field_name, new_value):
     session.commit()
     session.refresh(attribute)
     return {"status": "success"}
+
 # API Anfragen:
-# die topic_id und/oder status_id eines ToDos ändern (in der ToDo Liste):
-@app.put("/change-status")
-def update_status(new_status: TopicStatusUpdate, session: SessionDep):
-    statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
-    return change_helper(session, statement, 'status_id', new_status.status_id)
+# arbeiter in der bearbeiter liste ändern
+@app.put("/change-arbeiter")
+def update_arbeiter(new_mitarbeiter: ArbeiterUpdate, session: SessionDep):
+    statement = select(Bearbeiter).where(Bearbeiter.todo_id == new_mitarbeiter.todo_id
+                                         and Bearbeiter.mitarbeiter_id == new_mitarbeiter.mitarbeiter_id)
+    return  change_helper(session, statement, 'mitarbeiter_id', new_mitarbeiter.mitarbeiter_id)
+# topic in der todo liste ändern
 @app.put("/change-topic")
 def update_topic(new_topic: TopicUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_topic.todo_id)
     return change_helper(session, statement, 'topic_id', new_topic.topic_id)
+# status in der todo liste ändern
+@app.put("/change-status")
+def update_status(new_status: StatusUpdate, session: SessionDep):
+    statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
+    return change_helper(session, statement, 'status_id', new_status.status_id)
 # Aufgaben:
 # arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen beim Erstellen der tables
-# arbeiter ändern
