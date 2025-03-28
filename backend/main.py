@@ -1,6 +1,6 @@
 from typing import Annotated
-from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import select, insert
+from fastapi import Depends, FastAPI, HTTPException
+from sqlmodel import select
 from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter
 from datetime import datetime
 from pydantic import BaseModel
@@ -16,7 +16,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Post Anfragen:
 # BaseModel
-class ToDoCreate(BaseModel):
+class CreateToDo(BaseModel):
     name: str
     description: str | None = None
     deadline: datetime | None = None
@@ -30,7 +30,7 @@ class CreateArbeiter(BaseModel):
 class CreateTopicStatus(BaseModel):
     name: str
 # Helper:
-def create_todo_helper(data:ToDoCreate):
+def create_todo_helper(data:CreateToDo):
     create_todos = ToDo(name = data.name, description= data.description, deadline = data.deadline, topic_id = data.topic_id, status_id = data.status_id)
     return create_todos
 def create_helper(data, session):
@@ -45,7 +45,7 @@ def create_helper(data, session):
 # API Anfragen:
 # ToDo erstellen:
 @app.post("/create-todo")
-def create_todo(todo_data: ToDoCreate, session: SessionDep):
+def create_todo(todo_data: CreateToDo, session: SessionDep):
     todo = create_todo_helper(todo_data)
     create_helper(todo, session)
     neuer_bearbeiter = Bearbeiter(todo_id=todo.todo_id, mitarbeiter_id=todo_data.arbeiter_id)
@@ -60,11 +60,23 @@ def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
 def create_topic(topic_data: CreateTopicStatus, session: SessionDep):
     topic = Topics(name = topic_data.name)
     return create_helper(topic, session)
-# status erstellen:
+# Status erstellen:
 @app.post("/create-status")
 def create_status(status_data: CreateTopicStatus, session: SessionDep):
     status = Status(name = status_data.name)
     return create_helper(status, session)
+# Beispieldaten erstellen:
+@app.post("/create-beispieldaten")
+def create_beispieldaten(session: SessionDep):
+    status = Status(name='Bsp.')
+    create_helper(status, session)
+    topic = Topics(name='Bsp.')
+    create_helper(topic, session)
+    arbeiter = Arbeiter(name='Test', lastname='Testing', email='E-Mail')
+    create_helper(arbeiter, session)
+    todo = ToDo(name='Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
+    create_helper(todo, session)
+    return {"status":"success"}
 
 # Get Anfragen:
 
@@ -100,7 +112,7 @@ def read_todo_helper(read_todo:list):
 # API Anfragen:
 # ToDos anhand der todo_id ausgeben
 @app.get("/todos-by-id")
-def read_todos(todoid:int, session: SessionDep):
+def read_todos(todoid: int, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todoid)
     todos = session.exec(statement).all()
     if not todos:
@@ -120,8 +132,6 @@ def read_todos_by_topic(topic: str, session: SessionDep):
 # Put Anfragen:
 
 # BaseModel:
-
-# arbeiter ändern
 class ArbeiterUpdate(BaseModel):
     todo_id: int
     mitarbeiter_id: int
@@ -162,5 +172,3 @@ def update_topic(new_topic: TopicUpdate, session: SessionDep):
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     return change_helper(session, statement, 'status_id', new_status.status_id)
-# Aufgaben:
-# arbeiter löschen in der bearbeiter/arbeiter liste einen allgemeinen arbeiter hinzufügen beim Erstellen der tables
