@@ -1,13 +1,16 @@
-button{
-    font-size: 20pt; /* Increase the font size */
-  padding: 10px 20px; /* Increase the padding */
-  border: 3px solid #a30404; /* Add a border */
-  border-radius: 60px; /* Add a border radius */
-  border-bottom: 3px solid #102ba3; /* Add a border bottom */
-  border-right: 3px solid #102ba3; /* Add a border right */
-  position: absolute; /* Position the button absolutely */
-  top: 10px; /* Position from the top */
-  right: 10px; /* Position from the right */
+button {
+  font-size: 16pt; /* Reduziere die Schriftgröße */
+  padding: 5px 8px; /* Reduziere das Padding */
+  border-radius: 20px; /* Reduziere die Rundung */
+  width: 65px; /* Setze die Breite des Buttons */
+  height: 50px; /* Setze die Höhe des Buttons */
+  /* Die restlichen Eigenschaften bleiben gleich */
+  border: 3px solid #a30404;
+  border-bottom: 3px solid #102ba3;
+  border-right: 3px solid #102ba3;
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
     
 h2{font-size: 35pt;}

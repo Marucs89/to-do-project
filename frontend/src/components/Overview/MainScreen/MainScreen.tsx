@@ -3,6 +3,7 @@ import "./MainScreen.css";
 import TopicTabs from "./TopicTabs/TopicTabs";
 import OverviewBody from "./OverviewBody/OverviewBody";
 import { ToDo } from "../../../schemas/to-do";
+import ToDoOverviewBody from "./OverviewBody/ToDoOverviewBody/ToDoOverviewBody";
 
 export enum Topics {
   Freizeit = "Freizeit",
@@ -18,6 +19,7 @@ export default function MainScreen() {
   return (
     <div id='root'>
       <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
+      <ToDoOverviewBody></ToDoOverviewBody>
       <OverviewBody toDoData={toDoData} />
       {noToDos ? null : null}
     </div>
