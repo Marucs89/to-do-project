@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import "./MainScreen.css";
 import TopicTabs from "./TopicTabs/TopicTabs";
 import OverviewBody from "./OverviewBody/OverviewBody";
