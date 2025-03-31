@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import "./MainScreen.css";
 import TopicTabs from "./TopicTabs/TopicTabs";
 import OverviewBody from "./OverviewBody/OverviewBody";
@@ -14,6 +14,9 @@ export enum Topics {
 export default function MainScreen() {
   const [toDoData, setToDoData] = useState<ToDo[]>();
   const [noToDos, setNoToDos] = useState<boolean>(false);
+  useEffect(() => {
+    console.log("ToDOData: ", toDoData);
+  }, [toDoData]);
 
   return (
     <div id='root'>
