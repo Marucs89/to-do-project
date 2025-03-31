@@ -15,6 +15,7 @@ async def lifespan(app: FastAPI):
     yield
 app = FastAPI(lifespan=lifespan)
 
+# Access-Control-Allow-Origin
 origins = [
     "http://localhost:5173",
     "http://localhost:8000",
