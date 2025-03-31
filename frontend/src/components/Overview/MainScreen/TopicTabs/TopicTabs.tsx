@@ -11,29 +11,6 @@ export default function TopicTabs({
   setToDoData: React.Dispatch<React.SetStateAction<ToDo[] | undefined>>;
   setNoToDos: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  useEffect(() => {
-    setToDoData([
-      {
-        todo_id: 1,
-        name: "Buy milk",
-        description: null,
-        arbeiter: [{ mitarbeiter_id: 1, name: "Müller", lastname: "Hans" }],
-        topic: { topic_id: 1, name: "Sport" },
-        status: { status_id: 1, name: "offen" },
-      },
-      {
-        todo_id: 2,
-        name: "test22",
-        description: "tets_2",
-        arbeiter: [{ mitarbeiter_id: 2, name: "Franz", lastname: "Hans" }],
-        topic: { topic_id: 1, name: "Sport" },
-        status: {
-          status_id: 1,
-          name: "offen",
-        },
-      },
-    ]);
-  });
   return (
     <div id='tabBar'>
       <button
