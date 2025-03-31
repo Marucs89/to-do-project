@@ -1,56 +1,74 @@
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
 from datetime import datetime
+import pymysql
+
+# Verbindung zur MariaDB herstellen
+connection = pymysql.connect(
+    host='localhost',
+    user='root',
+    password=''
+)
+
+# Cursor-Objekt erstellen
+cursor = connection.cursor()
+
+# Datenbank erstellen, falls sie nicht existiert
+#cursor.execute("DROP DATABASE tododb") # Bestehende Datenbank löschen nur nutzen, wenn neue Attribute hinzugefügt werden
+cursor.execute("CREATE DATABASE IF NOT EXISTS tododb")
+
+# Verbindung schließen
+cursor.close()
+connection.close()
 
 # Tabellen erstellen
-class Teams(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True, max_length=100)
-    headquarters: str = Field(max_length=100)
-    heroes: list["Hero"] = Relationship(back_populates="team")
-
-class Hero(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True, max_length=100)
-    age: int | None = Field(default=None, index=True)
-    secret_name: str = Field(max_length=100)
-    team_id: int | None = Field(default=None, foreign_key="teams.id")
-    team: Teams | None = Relationship(back_populates="heroes")
-
 class ToDo(SQLModel, table=True):
-    ToDo_ID: int | None = Field(default=None, primary_key=True)
-    Name: str = Field(max_length=100)
-    Details: str | None = Field(max_length=100)
-    Deadline: datetime | None = Field(default=None)
-    Typ_ID: int | None = Field(default=None)
-    # Ein ToDo kann mehrere Bearbeiter-Einträge haben
+    todo_id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(max_length=100)
+    description: str | None = Field(max_length=100)
+    deadline: datetime | None = Field(default=None)
+    topic_id: int = Field(default=None, foreign_key='topics.topic_id')
+    status_id: int = Field(default=None, foreign_key='status.status_id')
+    # Beziehungen zu anderen Tabellen
     bearbeiter_links: list["Bearbeiter"] = Relationship(back_populates="todo")
+    topic: "Topics" = Relationship(back_populates="todos")
+    status: "Status" = Relationship(back_populates="todos")
 
 class Arbeiter(SQLModel, table=True):
     mitarbeiter_id: int | None = Field(default=None, primary_key=True)
-    Name: str = Field(max_length=100)
-    Vorname: str = Field(max_length=100)
-    Kontaktdaten: str | None = Field(max_length=100)
-    # Ein Arbeiter kann mehreren Bearbeiter-Einträgen zugeordnet sein
+    name: str = Field(max_length=100)
+    lastname: str = Field(max_length=100)
+    email: str | None = Field(max_length=100)
+    # Beziehung zu ToDos
     todo_links: list["Bearbeiter"] = Relationship(back_populates="arbeiter")
 
 class Bearbeiter(SQLModel, table=True):
-    # Zusammengesetzter Primärschlüssel, der auf die richtigen IDs verweist
-    todo_id: int = Field(foreign_key="todo.ToDo_ID", primary_key=True)
+    todo_id: int = Field(foreign_key="todo.todo_id", primary_key=True)
     mitarbeiter_id: int = Field(foreign_key="arbeiter.mitarbeiter_id", primary_key=True)
-    # Jeder Bearbeiter-Eintrag gehört zu einem ToDo und einem Arbeiter
+    # Beziehungen zu ToDo und Arbeiter
     todo: ToDo = Relationship(back_populates="bearbeiter_links")
     arbeiter: Arbeiter = Relationship(back_populates="todo_links")
 
-#mariadb_url = f"mariadb+pymysql://if0_38298610:ToDoProjekt2025@sql300.infinityfree.com/if0_38298610_todoprojekt"
-mariadb_url = f"mariadb+pymysql://root:@localhost:3306/herodb"
+class Topics (SQLModel, table=True):
+    topic_id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(max_length=100)
+    # Beziehung zu ToDos
+    todos: list["ToDo"] = Relationship(back_populates="topic")
+
+class Status(SQLModel, table=True):
+    status_id: int | None = Field(default=None, primary_key=True)
+    name: str | None = Field(default=None, max_length=100)
+    # Beziehung zu ToDos
+    todos: list["ToDo"] = Relationship(back_populates="status")
+
+# MariaDB Verbindungs-URL
+mariadb_url = f"mariadb+pymysql://root:@localhost:3306/tododb"
 engine = create_engine(mariadb_url)
 
-# funktion tables zu erstellen / laden
+# Funktion zum Erstellen der Tabellen
 def create_db_and_tables():
-#    SQLModel.metadata.drop_all(engine)  # Bestehende Tabellen löschen nur nutzen wenn neue Attribute hinzugefügt werden
     SQLModel.metadata.create_all(engine)  # Tabellen neu erstellen
 
-# sql connection wird etabliert
+# Funktion zum Erstellen einer SQL-Session
 def get_session():
     with Session(engine) as session:
         yield session
