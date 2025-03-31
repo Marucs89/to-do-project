@@ -5,6 +5,7 @@ from database import Session, get_session, create_db_and_tables,ToDo, Topics, St
 from datetime import datetime
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -13,6 +14,19 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 app = FastAPI(lifespan=lifespan)
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Post Anfragen:
 # BaseModel
