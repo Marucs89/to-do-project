@@ -13,12 +13,14 @@
 }
 
 button{
-  width: 150px;
+  width: 250px;
   height: 100%;
   border: 1px solid black;
 }
 button:hover {
   background-color: white;
   cursor: pointer;
-
+}
+button:focus {
+  background-color: white;
 }
