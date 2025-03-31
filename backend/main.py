@@ -6,6 +6,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
+import pymysql
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -83,13 +84,23 @@ def create_status(status_data: CreateTopicStatus, session: SessionDep):
 # Beispieldaten erstellen:
 @app.post("/create-beispieldaten")
 def create_beispieldaten(session: SessionDep):
-    status = Status(name='Bsp.')
+    status = Status(name = 'noch nicht begonnen')
     create_helper(status, session)
-    topic = Topics(name='Bsp.')
+    status = Status(name = 'in Arbeit.')
+    create_helper(status, session)
+    status =Status(name = 'fertig')
+    create_helper(status, session)
+    topic = Topics(name = 'Freizeit')
     create_helper(topic, session)
-    arbeiter = Arbeiter(name='Test', lastname='Testing', email='E-Mail')
+    topic = Topics(name = 'Arbeit')
+    create_helper(topic, session)
+    topic = Topics(name = 'Schule')
+    create_helper(topic, session)
+    topic = Topics(name = 'Sport')
+    create_helper(topic, session)
+    arbeiter = Arbeiter(name = 'Test', lastname = 'Testing', email = 'E-Mail')
     create_helper(arbeiter, session)
-    todo = ToDo(name='Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
+    todo = ToDo(name = 'Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
     create_helper(todo, session)
     return {"status":"success"}
 
@@ -187,3 +198,25 @@ def update_topic(new_topic: TopicUpdate, session: SessionDep):
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     return change_helper(session, statement, 'status_id', new_status.status_id)
+
+# DELETE Anfragen:
+# Base Model:
+# Helper:
+def delete_database_helper():
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password=''
+    )
+    cursor = connection.cursor()
+    cursor.execute("DROP DATABASE tododb")
+    cursor.execute("CREATE DATABASE IF NOT EXISTS tododb")
+    cursor.close()
+    connection.close()
+    create_db_and_tables()
+    yield
+# API Anfragen:
+@app.delete("/delete-database")
+def delete_database(delete:bool):
+    if delete:
+        return delete_database_helper()
