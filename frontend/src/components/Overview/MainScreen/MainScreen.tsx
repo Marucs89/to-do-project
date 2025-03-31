@@ -15,7 +15,7 @@ export default function MainScreen() {
   const [toDoData, setToDoData] = useState<ToDo[]>();
   const [noToDos, setNoToDos] = useState<boolean>(false);
   useEffect(() => {
-    console.log("ToDOData: ", toDoData)
+    console.log("ToDOData: ", toDoData);
   }, [toDoData]);
 
   return (

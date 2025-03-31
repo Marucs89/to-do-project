@@ -9,7 +9,6 @@ export enum Topics {
 }
 
 export default function OverviewBody({ toDoData }: { toDoData: ToDo[] | undefined }) {
-
   return <div id='overviewBody'>
     
   </div>;

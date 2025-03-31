@@ -11,7 +11,6 @@ export default function TopicTabs({
   setToDoData: React.Dispatch<React.SetStateAction<ToDo[] | undefined>>;
   setNoToDos: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-
   return (
     <div id='tabBar'>
       <button
