@@ -172,3 +172,4 @@ def update_topic(new_topic: TopicUpdate, session: SessionDep):
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     return change_helper(session, statement, 'status_id', new_status.status_id)
+# Test
