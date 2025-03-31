@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import "./MainScreen.css";
 import TopicTabs from "./TopicTabs/TopicTabs";
 import OverviewBody from "./OverviewBody/OverviewBody";
@@ -24,6 +24,7 @@ export default function MainScreen() {
       <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
       <ToDoOverviewBody></ToDoOverviewBody>
       <OverviewBody toDoData={toDoData} />
+      <ToDoOverview />
       {noToDos ? null : null}
     </div>
   );
