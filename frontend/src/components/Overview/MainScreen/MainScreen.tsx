@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "./MainScreen.css";
-import { getToDoDataForTopic } from "../../../services/api";
 import TopicTabs from "./TopicTabs/TopicTabs";
+import OverviewBody from "./OverviewBody/OverviewBody";
+import { ToDo } from "../../../schemas/to-do";
 
 export enum Topics {
   Freizeit = "Freizeit",
@@ -11,14 +12,14 @@ export enum Topics {
 }
 
 export default function MainScreen() {
-  //TODO: Data Schema definieren
-  const [toDoData, setToDoData] = useState();
-  const [noToDos, setNoToDos] = useState(false);
-  console.log("To Do Data: ", toDoData);
+  const [toDoData, setToDoData] = useState<ToDo[]>();
+  const [noToDos, setNoToDos] = useState<boolean>(false);
+
   return (
     <div id='root'>
       <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
-      
+      <OverviewBody toDoData={toDoData} />
+      {noToDos ? null : null}
     </div>
   );
 }
