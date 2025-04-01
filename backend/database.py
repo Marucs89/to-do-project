@@ -2,23 +2,28 @@ from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
 from datetime import datetime
 import pymysql
 
-# Verbindung zur MariaDB herstellen
-connection = pymysql.connect(
-    host='localhost',
-    user='root',
-    password=''
-)
+def create_database_helper(delete:bool):
+    connection = pymysql.connect(
+        host='localhost',
+        user='root',
+        password=''
+    )
 
-# Cursor-Objekt erstellen
-cursor = connection.cursor()
+    # Cursor-Objekt erstellen
+    cursor = connection.cursor()
 
-# Datenbank erstellen, falls sie nicht existiert
-#cursor.execute("DROP DATABASE tododb") # Bestehende Datenbank löschen nur nutzen, wenn neue Attribute hinzugefügt werden
-cursor.execute("CREATE DATABASE IF NOT EXISTS tododb")
+    # Datenbank erstellen, falls sie nicht existiert
+    # cursor.execute("DROP DATABASE tododb") # Bestehende Datenbank löschen nur nutzen, wenn neue Attribute hinzugefügt werden
+    if delete:
+        cursor.execute("DROP DATABASE tododb")
+    cursor.execute("CREATE DATABASE IF NOT EXISTS tododb")
 
-# Verbindung schließen
-cursor.close()
-connection.close()
+    # Verbindung schließen
+    cursor.close()
+    connection.close()
+
+
+create_database_helper(delete = False)
 
 # Tabellen erstellen
 class ToDo(SQLModel, table=True):

@@ -1,12 +1,11 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException
 from sqlmodel import select
-from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter
+from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter, create_database_helper
 from datetime import datetime
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-import pymysql
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -202,21 +201,10 @@ def update_status(new_status: StatusUpdate, session: SessionDep):
 # DELETE Anfragen:
 # Base Model:
 # Helper:
-def delete_database_helper():
-    connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password=''
-    )
-    cursor = connection.cursor()
-    cursor.execute("DROP DATABASE tododb")
-    cursor.execute("CREATE DATABASE IF NOT EXISTS tododb")
-    cursor.close()
-    connection.close()
-    create_db_and_tables()
-    yield
 # API Anfragen:
 @app.delete("/delete-database")
 def delete_database(delete:bool):
     if delete:
-        return delete_database_helper()
+        create_database_helper(delete)
+        yield create_db_and_tables()
+        return {"status": "success"}
