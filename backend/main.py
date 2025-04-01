@@ -212,3 +212,4 @@ def delete_database(delete:bool):
         create_database_helper(delete)
         yield create_db_and_tables()
         return {"status": "success"}
+    return {"status": "failed"}
