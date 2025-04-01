@@ -101,6 +101,8 @@ def create_beispieldaten(session: SessionDep):
     create_helper(arbeiter, session)
     todo = ToDo(name = 'Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
     create_helper(todo, session)
+    bearbeiter = Bearbeiter(todo_id = 1, mitarbeiter_id = 1)
+    create_helper(bearbeiter, session)
     return {"status":"success"}
 
 # Get Anfragen:
