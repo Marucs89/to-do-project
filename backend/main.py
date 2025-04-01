@@ -151,9 +151,11 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     statement = select(Topics.topic_id).where(Topics.name == topic)
     result = session.exec(statement).first()
     if not result:
-        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht gefunden")
+        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
     statement = select(ToDo).where(ToDo.topic_id == result)
     todos = session.exec(statement).all()
+    if not todos:
+        raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)
 
 # Put Anfragen:
@@ -174,7 +176,7 @@ class StatusUpdate(BaseModel):
 def change_helper(session, statement, field_name, new_value):
     results = session.exec(statement).all()
     if not results:
-        raise HTTPException(status_code=404, detail=f"ToDo nicht gefunden")
+        raise HTTPException(status_code=404, detail=f"'{field_name}' nicht in liste gefunden")
     attribute = results[0]
     setattr(attribute, field_name, new_value) # update attribute, set new_value, where field_name,
     session.add(attribute)
