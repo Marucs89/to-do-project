@@ -141,7 +141,7 @@ def read_todo_helper(read_todo:list):
 @app.get("/todos-by-id")
 def read_todos(todoid: int, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todoid)
-    todos = session.exec(statement).all()
+    todos = session.exec(statement).unique().all()
     if not todos:
         raise HTTPException(status_code=404, detail=f"Todo '{todoid}' nicht gefunden")
     return read_todo_helper(todos)
@@ -153,7 +153,7 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     if not result:
         raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
     statement = select(ToDo).where(ToDo.topic_id == result)
-    todos = session.exec(statement).all()
+    todos = session.exec(statement).unique().all()
     if not todos:
         raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)
@@ -174,7 +174,7 @@ class StatusUpdate(BaseModel):
 
 # Helper:
 def change_helper(session, statement, field_name, new_value):
-    results = session.exec(statement).all()
+    results = session.exec(statement).unique().all()
     if not results:
         raise HTTPException(status_code=404, detail=f"'{field_name}' nicht in liste gefunden")
     attribute = results[0]

@@ -34,9 +34,9 @@ class ToDo(SQLModel, table=True):
     topic_id: int = Field(default=None, foreign_key='topics.topic_id')
     status_id: int = Field(default=None, foreign_key='status.status_id')
     # Beziehungen zu anderen Tabellen
-    bearbeiter_links: list["Bearbeiter"] = Relationship(back_populates="todo")
-    topic: "Topics" = Relationship(back_populates="todos")
-    status: "Status" = Relationship(back_populates="todos")
+    bearbeiter_links: list["Bearbeiter"] = Relationship(back_populates="todo", sa_relationship_kwargs={"lazy": "joined"})
+    topic: "Topics" = Relationship(back_populates="todos", sa_relationship_kwargs={"lazy": "joined"}) # bei der abfrage wird immer join genutzt und nicht 4 mal select
+    status: "Status" = Relationship(back_populates="todos", sa_relationship_kwargs={"lazy": "joined"})
 
 class Arbeiter(SQLModel, table=True):
     mitarbeiter_id: int | None = Field(default=None, primary_key=True)
