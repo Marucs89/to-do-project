@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException
 from sqlmodel import select
-from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter
+from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter, create_database_helper
 from datetime import datetime
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
@@ -83,14 +83,26 @@ def create_status(status_data: CreateTopicStatus, session: SessionDep):
 # Beispieldaten erstellen:
 @app.post("/create-beispieldaten")
 def create_beispieldaten(session: SessionDep):
-    status = Status(name='Bsp.')
+    status = Status(name = 'noch nicht begonnen')
     create_helper(status, session)
-    topic = Topics(name='Bsp.')
+    status = Status(name = 'in Arbeit.')
+    create_helper(status, session)
+    status =Status(name = 'fertig')
+    create_helper(status, session)
+    topic = Topics(name = 'Freizeit')
     create_helper(topic, session)
-    arbeiter = Arbeiter(name='Test', lastname='Testing', email='E-Mail')
+    topic = Topics(name = 'Arbeit')
+    create_helper(topic, session)
+    topic = Topics(name = 'Schule')
+    create_helper(topic, session)
+    topic = Topics(name = 'Sport')
+    create_helper(topic, session)
+    arbeiter = Arbeiter(name = 'Test', lastname = 'Testing', email = 'E-Mail')
     create_helper(arbeiter, session)
-    todo = ToDo(name='Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
+    todo = ToDo(name = 'Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
     create_helper(todo, session)
+    bearbeiter = Bearbeiter(todo_id = 1, mitarbeiter_id = 1)
+    create_helper(bearbeiter, session)
     return {"status":"success"}
 
 # Get Anfragen:
@@ -129,7 +141,7 @@ def read_todo_helper(read_todo:list):
 @app.get("/todos-by-id")
 def read_todos(todoid: int, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todoid)
-    todos = session.exec(statement).all()
+    todos = session.exec(statement).unique().all()
     if not todos:
         raise HTTPException(status_code=404, detail=f"Todo '{todoid}' nicht gefunden")
     return read_todo_helper(todos)
@@ -139,9 +151,11 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     statement = select(Topics.topic_id).where(Topics.name == topic)
     result = session.exec(statement).first()
     if not result:
-        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht gefunden")
+        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
     statement = select(ToDo).where(ToDo.topic_id == result)
-    todos = session.exec(statement).all()
+    todos = session.exec(statement).unique().all()
+    if not todos:
+        raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)
 
 # Put Anfragen:
@@ -160,9 +174,9 @@ class StatusUpdate(BaseModel):
 
 # Helper:
 def change_helper(session, statement, field_name, new_value):
-    results = session.exec(statement).all()
+    results = session.exec(statement).unique().all()
     if not results:
-        raise HTTPException(status_code=404, detail=f"ToDo nicht gefunden")
+        raise HTTPException(status_code=404, detail=f"'{field_name}' nicht in liste gefunden")
     attribute = results[0]
     setattr(attribute, field_name, new_value) # update attribute, set new_value, where field_name,
     session.add(attribute)
@@ -187,3 +201,15 @@ def update_topic(new_topic: TopicUpdate, session: SessionDep):
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     return change_helper(session, statement, 'status_id', new_status.status_id)
+
+# DELETE Anfragen:
+# Base Model:
+# Helper:
+# API Anfragen:
+@app.delete("/delete-database")
+def delete_database(delete:bool):
+    if delete:
+        create_database_helper(delete)
+        yield create_db_and_tables()
+        return {"status": "success"}
+    return {"status": "failed"}
