@@ -56,7 +56,7 @@ def create_helper(data, session):
         return {"status":"success"}
     except Exception as e:
         session.rollback()
-        raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen des: {str(e)}")
+        raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen: {str(e)}")
 # API Anfragen:
 # ToDo erstellen:
 @app.post("/create-todo")
@@ -101,8 +101,10 @@ def create_beispieldaten(session: SessionDep):
     create_helper(arbeiter, session)
     todo = ToDo(name = 'Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
     create_helper(todo, session)
-    # die ids dynamischer machen also vorallem die todo_id -> last oder die todo_id von dem schreiben?
-    bearbeiter = Bearbeiter(todo_id = 1, mitarbeiter_id = 1)
+    statement = select(ToDo.todo_id)
+    result = session.exec(statement).unique().all()
+    lasttodo = max(result)
+    bearbeiter = Bearbeiter(todo_id = lasttodo, mitarbeiter_id = 1)
     create_helper(bearbeiter, session)
     return {"status":"success"}
 
@@ -130,6 +132,7 @@ def read_todo_helper(read_todo:list):
             "name": todo.name,
             "description": todo.description,
             "deadline": todo.deadline,
+            "done": todo.done,
             "arbeiter": arbeiter_liste,
             "topic": topic_info,
             "status": status_info
@@ -174,12 +177,29 @@ class StatusUpdate(BaseModel):
     status_id: int
 
 # Helper:
-def change_helper(session, statement, field_name, new_value):
+def change_helper(session, statement, field_name, new_value, test=False, table=None):
     results = session.exec(statement).unique().all()
     if not results:
         raise HTTPException(status_code=404, detail=f"'{field_name}' nicht in liste gefunden")
     attribute = results[0]
-    setattr(attribute, field_name, new_value) # update attribute, set new_value, where field_name,
+    #print(results)
+    print(attribute)
+    if test and table:
+        if table == Arbeiter:
+            id_field = "mitarbeiter_id"
+        elif table == Topics:
+            id_field = "topic_id"
+        elif table == Status:
+            id_field = "status_id"
+        else:
+            id_field = "id"
+        check_statement = select(table).where(getattr(table, id_field) == new_value) # SELECT * FROM table_name WHERE id_field = value
+        existing_item = session.exec(check_statement).first()
+        print(existing_item)
+        if not existing_item:
+            raise HTTPException(status_code=400,
+                                detail=f"{field_name}={new_value} existiert nicht in '{table.__name__}'")
+    setattr(attribute, field_name, new_value) # UPDATE table_name SET field_name = new_value WHERE primary_key_column = primary_key_value
     session.add(attribute)
     session.commit()
     session.refresh(attribute)
@@ -191,21 +211,34 @@ def change_helper(session, statement, field_name, new_value):
 def update_arbeiter(new_mitarbeiter: ArbeiterUpdate, session: SessionDep):
     statement = select(Bearbeiter).where(Bearbeiter.todo_id == new_mitarbeiter.todo_id
                                          and Bearbeiter.mitarbeiter_id == new_mitarbeiter.mitarbeiter_id)
-    return  change_helper(session, statement, 'mitarbeiter_id', new_mitarbeiter.new_mitarbeiter_id)
+    return  change_helper(session, statement, 'mitarbeiter_id', new_mitarbeiter.new_mitarbeiter_id, True, Arbeiter)
 # topic in der todo liste ändern
 @app.put("/change-topic")
 def update_topic(new_topic: TopicUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_topic.todo_id)
-    return change_helper(session, statement, 'topic_id', new_topic.topic_id)
+    return change_helper(session, statement, 'topic_id', new_topic.topic_id, True, Topics)
 # status in der todo liste ändern
 @app.put("/change-status")
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
-    return change_helper(session, statement, 'status_id', new_status.status_id)
+    return change_helper(session, statement, 'status_id', new_status.status_id, True, Status)
 
 # DELETE Anfragen:
 # Base Model:
+class DeleteTodo(BaseModel):
+    todo_id: int
 # Helper:
+def delete_helper(statement, session):
+    try:
+        result = session.exec(statement)
+        todelete = result.first()
+        if not todelete:
+            raise HTTPException(status_code=404, detail=f"Es wurde kein eintrag in der tabelle gefunden")
+        session.delete(todelete)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise  HTTPException(status_code=400, detail=f"Fehler beim löschen")
 # API Anfragen:
 # die ganze database wird gelöscht und neu erstellt inklusive tables
 @app.delete("/delete-database")
@@ -218,10 +251,12 @@ def delete_database(delete:bool):
 
 # delete todo
 @app.delete("/delete-todo")
-def delete_todo(todo_id:int, session:SessionDep):
+def delete_todo(todo_id: int, session:SessionDep):
     # delete from ToDo where ToDo.todo_id == todo_id
-    statement = delete(Bearbeiter).where(Bearbeiter.todo_id == todo_id)
-    session.exec(statement)
-    statement = delete(ToDo).where(ToDo.todo_id == todo_id)
-    session.exec(statement)
+    statement = select(Bearbeiter).where(Bearbeiter.todo_id == todo_id)
+    delete_helper(statement, session)
+    statement = select(ToDo).where(ToDo.todo_id == todo_id)
+    delete_helper(statement, session)
     return {"status": "success"}
+# Aufgaben:
+# update done, ist "done" ein guter Name? wenn nicht muss nur in read_todo_helper geändert werden.
