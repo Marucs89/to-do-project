@@ -1,4 +1,4 @@
-import ToDoOverview from "./components/Overview/MainScreen/MainScreen";
+import MainScreen from "./components/Overview/MainScreen/MainScreen";
 
 export enum Users {
   undefined = "undefined",
@@ -11,7 +11,7 @@ export enum Users {
 function App() {
   return (
     <div>
-      <ToDoOverview />
+      <MainScreen />
     </div>
   );
 }

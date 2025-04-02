@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import "./MainScreen.css";
 import TopicTabs from "./TopicTabs/TopicTabs";
-import OverviewBody from "./OverviewBody/OverviewBody";
-import { ToDo } from "../../../schemas/to-do";
+import { ToDos } from "../../../schemas/to-do";
 import ToDoOverviewBody from "./OverviewBody/ToDoOverviewBody/ToDoOverviewBody";
 
 export enum Topics {
@@ -13,19 +12,22 @@ export enum Topics {
 }
 
 export default function MainScreen() {
-  const [toDoData, setToDoData] = useState<ToDo[]>();
+  const [toDoData, setToDoData] = useState<ToDos>();
   const [noToDos, setNoToDos] = useState<boolean>(false);
   useEffect(() => {
     console.log("ToDOData: ", toDoData);
   }, [toDoData]);
 
   return (
-    <div id='root'>
-      <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
-      <ToDoOverviewBody></ToDoOverviewBody>
-      <OverviewBody toDoData={toDoData} />
-      <ToDoOverview />
-      {noToDos ? null : null}
+    <div className='uk-flex'>
+      <div className='uk-position-center-left'>
+        <TopicTabs setToDoData={setToDoData} setNoToDos={setNoToDos} />
+      </div>
+      {noToDos ? null : (
+        <div className='uk-position-top-center uk-margin-large-top uk-margin-large-left'>
+          <ToDoOverviewBody toDos={toDoData} />
+        </div>
+      )}
     </div>
   );
 }
