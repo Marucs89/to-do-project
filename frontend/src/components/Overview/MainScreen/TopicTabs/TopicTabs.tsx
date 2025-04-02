@@ -1,14 +1,13 @@
 import "./TopicTabs.css";
 import { getToDoDataForTopic } from "../../../../services/api";
 import { Topics } from "../MainScreen";
-import { ToDo } from "../../../../schemas/to-do";
-import { useEffect } from "react";
+import { ToDos } from "../../../../schemas/to-do";
 
 export default function TopicTabs({
   setToDoData,
   setNoToDos,
 }: {
-  setToDoData: React.Dispatch<React.SetStateAction<ToDo[] | undefined>>;
+  setToDoData: React.Dispatch<React.SetStateAction<ToDos | undefined>>;
   setNoToDos: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
@@ -18,6 +17,7 @@ export default function TopicTabs({
           try {
             const freizeitToDoData = await getToDoDataForTopic(Topics.Freizeit);
             setToDoData(freizeitToDoData);
+            setNoToDos(false);
           } catch (err: unknown) {
             if (err === "No data for topic found!") {
               setNoToDos(true);
@@ -30,24 +30,48 @@ export default function TopicTabs({
       </button>
       <button
         onClick={async () => {
-          const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
-          setToDoData(arbeitToDoData);
+          try {
+            const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
+            setToDoData(arbeitToDoData);
+            setNoToDos(true);
+          } catch (err: unknown) {
+            if (err === "No data for topic found!") {
+              setNoToDos(true);
+            }
+            console.log("ERROR: ", err);
+          }
         }}
       >
         Arbeit
       </button>
       <button
         onClick={async () => {
-          const schuleToDoData = await getToDoDataForTopic(Topics.Schule);
-          setToDoData(schuleToDoData);
+          try {
+            const schulToDoData = await getToDoDataForTopic(Topics.Schule);
+            setToDoData(schulToDoData);
+            setNoToDos(true);
+          } catch (err: unknown) {
+            if (err === "No data for topic found!") {
+              setNoToDos(true);
+            }
+            console.log("ERROR: ", err);
+          }
         }}
       >
         Schule
       </button>
       <button
         onClick={async () => {
-          const sportToDoData = await getToDoDataForTopic(Topics.Sport);
-          setToDoData(sportToDoData);
+          try {
+            const sportToDoData = await getToDoDataForTopic(Topics.Sport);
+            setToDoData(sportToDoData);
+            setNoToDos(true);
+          } catch (err: unknown) {
+            if (err === "No data for topic found!") {
+              setNoToDos(true);
+            }
+            console.log("ERROR: ", err);
+          }
         }}
       >
         Sport

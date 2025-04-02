@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ToDoSchema } from "../schemas/to-do";
 
 const localHostURL = "http://localhost:8000";
 export async function getToDoDataForTopic(topic: string) {
@@ -8,5 +9,6 @@ export async function getToDoDataForTopic(topic: string) {
       console.log("Error: ", error);
       throw new Error("No data for topic found!");
     });
-  return resp.data;
+  console.log("Raw Data: ", resp.data);
+  return ToDoSchema.parse(resp.data);
 }

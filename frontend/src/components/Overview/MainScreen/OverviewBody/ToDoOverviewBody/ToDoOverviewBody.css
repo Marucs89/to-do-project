@@ -1,32 +1,20 @@
-button {
-  font-size: 16pt; /* Reduziere die Schriftgröße */
-  padding: 5px 8px; /* Reduziere das Padding */
-  border-radius: 20px; /* Reduziere die Rundung */
-  width: 65px; /* Setze die Breite des Buttons */
-  height: 50px; /* Setze die Höhe des Buttons */
-  /* Die restlichen Eigenschaften bleiben gleich */
-  border: 3px solid #a30404;
-  border-bottom: 3px solid #102ba3;
-  border-right: 3px solid #102ba3;
-  position: absolute;
-  top: 5px;
-  right: 10px;
-}
-    
-h2{font-size: 35pt;}
-
-h3, h4, h5, h6 {
-  font-size: 20pt;
-  line-height: 0.1; /* Adjust the line height */
+th {
+  border-bottom: solid gray 2px;
+  width: 160px;
+  justify-items: center;
+  font-size: 14px;
 }
 
-.status-frame, .Task2 {
-  border: 2px solid #000; /* Add a solid border */
-  display: inline-block; /* Make the frame adjust to the text width */
-  padding: 2.0%; /* Add padding inside the border */
-  border-radius: 15px; /* Add rounded corners */
-  background-color: #f9f9f9; /* Set a background color */
-  margin-bottom: 10px; /* Add margin below the frame */
-  width: auto; /* Set width to auto to adjust to text */
-  height: auto; /* Set height to auto to adjust to text */
+td {
+}
+td > p {
+  text-align: end;
+  color: white;
+  background-color: rgba(137, 43, 226, 0.384);
+}
+
+
+th > p {
+  color: white;
+  font-weight: bold;
 }
