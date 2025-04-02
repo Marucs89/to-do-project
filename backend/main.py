@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException
-from sqlmodel import select
+from sqlmodel import select, delete
 from database import Session, get_session, create_db_and_tables,ToDo, Topics, Status, Bearbeiter, Arbeiter, create_database_helper
 from datetime import datetime
 from pydantic import BaseModel
@@ -101,6 +101,7 @@ def create_beispieldaten(session: SessionDep):
     create_helper(arbeiter, session)
     todo = ToDo(name = 'Buy Milk', description = 'at the store', deadline = datetime.now(), topic_id = 1, status_id = 1, arbeiter_id = 1)
     create_helper(todo, session)
+    # die ids dynamischer machen also vorallem die todo_id -> last oder die todo_id von dem schreiben?
     bearbeiter = Bearbeiter(todo_id = 1, mitarbeiter_id = 1)
     create_helper(bearbeiter, session)
     return {"status":"success"}
@@ -206,6 +207,7 @@ def update_status(new_status: StatusUpdate, session: SessionDep):
 # Base Model:
 # Helper:
 # API Anfragen:
+# die ganze database wird gelöscht und neu erstellt inklusive tables
 @app.delete("/delete-database")
 def delete_database(delete:bool):
     if delete:
@@ -213,3 +215,13 @@ def delete_database(delete:bool):
         yield create_db_and_tables()
         return {"status": "success"}
     return {"status": "failed"}
+
+# delete todo
+@app.delete("/delete-todo")
+def delete_todo(todo_id:int, session:SessionDep):
+    # delete from ToDo where ToDo.todo_id == todo_id
+    statement = delete(Bearbeiter).where(Bearbeiter.todo_id == todo_id)
+    session.exec(statement)
+    statement = delete(ToDo).where(ToDo.todo_id == todo_id)
+    session.exec(statement)
+    return {"status": "success"}
