@@ -175,6 +175,9 @@ class TopicUpdate(BaseModel):
 class StatusUpdate(BaseModel):
     todo_id: int
     status_id: int
+class DoneUpdate(BaseModel):
+    todo_id:int
+    done: bool
 
 # Helper:
 def change_helper(session, statement, field_name, new_value, test=False, table=None):
@@ -222,6 +225,12 @@ def update_topic(new_topic: TopicUpdate, session: SessionDep):
 def update_status(new_status: StatusUpdate, session: SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == new_status.todo_id)
     return change_helper(session, statement, 'status_id', new_status.status_id, True, Status)
+# done in der todo lsite ändern
+@app.put("/change-done")
+def update_done(new_done: DoneUpdate, session: SessionDep):
+    statement = select(ToDo).where(ToDo.todo_id == new_done.todo_id)
+    return change_helper(session, statement, 'done', new_done.done)
+
 
 # DELETE Anfragen:
 # Base Model:
@@ -258,5 +267,3 @@ def delete_todo(todo_id: int, session:SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todo_id)
     delete_helper(statement, session)
     return {"status": "success"}
-# Aufgaben:
-# update done, ist "done" ein guter Name? wenn nicht muss nur in read_todo_helper geändert werden.
