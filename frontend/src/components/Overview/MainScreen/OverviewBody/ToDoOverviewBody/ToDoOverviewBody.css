@@ -5,14 +5,17 @@ th {
   font-size: 14px;
 }
 
-td {
-}
-td > p {
-  text-align: end;
+.cell-div{
   color: white;
-  background-color: rgba(137, 43, 226, 0.384);
+  padding-left: 10px;
+}
+.marker-marcus{
+  background-color: rgba(54, 234, 38, 0.32);
 }
 
+.marker-marcel{
+  background-color: rgba(159, 38, 234, 0.32);
+}
 
 th > p {
   color: white;

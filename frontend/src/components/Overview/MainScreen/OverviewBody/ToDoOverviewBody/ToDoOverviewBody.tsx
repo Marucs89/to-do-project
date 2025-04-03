@@ -51,11 +51,26 @@ export default function ToDoOverviewBody({
         <td style={{ padding: "3px" }}>
           {currentToDos.length > 0 ? (
             currentToDos.map((toDo) => {
-              return <p style={{ paddingRight: "30px" }}>{toDo.name}</p>;
+              console.log("ToDO: ", toDo);
+              
+              const marker = `${toDo.arbeiter[0].name}`;
+              return (
+                <div
+                  className='uk-grid uk-margin-small-left cell-div'
+                  style={{
+                    background:
+                      "linear-gradient(150deg, rgba(156, 15, 10, 0.615) , rgba(159, 38, 234, 0.32),rgba(12, 202, 56, 0.32),rgba(0, 255, 255, 0.32))",
+                  }}
+                  uk-grid
+                >
+                  <input type='checkbox' className='' />
+                  <p style={{ paddingRight: "0px" }}>{toDo.name}</p>
+                </div>
+              );
             })
           ) : (
             <>
-              <p style={{ paddingRight: "30px" }}>Empty</p>
+              <p style={{ paddingRight: "50px" }}>Empty</p>
             </>
           )}
         </td>
