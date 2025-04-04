@@ -267,3 +267,4 @@ def delete_todo(todo_id: int, session:SessionDep):
     statement = select(ToDo).where(ToDo.todo_id == todo_id)
     delete_helper(statement, session)
     return {"status": "success"}
+# Aufgabe: Beim erstellen von ToDo müssen mehrere Arbeiter übergeben werden
