@@ -74,7 +74,12 @@ def create_todo(todo_data: CreateToDo, session: SessionDep):
 @app.post("/create-arbeiter")
 def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
     mitarbeiter = Arbeiter(name=arbeiter_data.name,lastname=arbeiter_data.lastname,email=arbeiter_data.email)
-    return create_helper(mitarbeiter, session)
+    # retrun mitarbeiter_id
+    create_helper(mitarbeiter, session)
+    statemen = select(Arbeiter.mitarbeiter_id)
+    result = session.exec(statemen)
+    toretrun = {"status": "success", "mitarbeiter_id": str(max(result))}
+    return toretrun
 # Topic erstellen:
 @app.post("/create-topic")
 def create_topic(topic_data: CreateTopicStatus, session: SessionDep):
@@ -181,7 +186,16 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     if not todos:
         raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)
-
+# Aufgabe: Get mitarbeiter-by-name
+@app.get("/miarbeiter-by-name")
+def read_mitarbeiter_by_name(name:str, session:SessionDep):
+    statement = select(Arbeiter).where(Arbeiter.name == name)
+    result= session.exec(statement).first()
+    if result:
+        toretrun = {"mitarbeiter_id": result.mitarbeiter_id, "name": result.name, "lastname": result.lastname, "email": result.email}
+        return toretrun
+    else:
+        raise HTTPException(status_code=404, detail=f"Arbeiter: '{name}' nicht gefunden")
 # Put Anfragen:
 
 # BaseModel:
