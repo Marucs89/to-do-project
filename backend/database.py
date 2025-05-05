@@ -31,10 +31,10 @@ class ToDo(SQLModel, table=True):
     name: str = Field(max_length=100)
     description: str | None = Field(max_length=100)
     deadline: datetime | None = Field(default=None)
-    topic_id: int = Field(default=None, foreign_key='topics.topic_id')
-    status_id: int = Field(default=None, foreign_key='status.status_id')
     # Es gibt in Mariadb kein boolean weswegen der Datentyp in der Tabelle ein tinyint ist, dementsprechend ist 0 = False und 1 = True, der default value ist immer False also muss beim Erstellen des ToDos nicht darüber nachgedacht werden.
     done : bool | None = Field(default=False)
+    topic_id: int = Field(default=None, foreign_key='topics.topic_id')
+    status_id: int = Field(default=None, foreign_key='status.status_id')
     # Beziehungen zu anderen Tabellen
     bearbeiter_links: list["Bearbeiter"] = Relationship(back_populates="todo", sa_relationship_kwargs={"lazy": "joined"})
     topic: "Topics" = Relationship(back_populates="todos", sa_relationship_kwargs={"lazy": "joined"}) # bei der abfrage wird immer join genutzt und nicht 4 mal select
