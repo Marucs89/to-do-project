@@ -33,7 +33,7 @@ export default function TopicTabs({
           try {
             const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
             setToDoData(arbeitToDoData);
-            setNoToDos(true);
+            setNoToDos(false);
           } catch (err: unknown) {
             if (err === "No data for topic found!") {
               setNoToDos(true);
@@ -49,12 +49,11 @@ export default function TopicTabs({
           try {
             const schulToDoData = await getToDoDataForTopic(Topics.Schule);
             setToDoData(schulToDoData);
-            setNoToDos(true);
+            setNoToDos(false);
           } catch (err: unknown) {
             if (err === "No data for topic found!") {
               setNoToDos(true);
             }
-            console.log("ERROR: ", err);
           }
         }}
       >
@@ -65,7 +64,7 @@ export default function TopicTabs({
           try {
             const sportToDoData = await getToDoDataForTopic(Topics.Sport);
             setToDoData(sportToDoData);
-            setNoToDos(true);
+            setNoToDos(false);
           } catch (err: unknown) {
             if (err === "No data for topic found!") {
               setNoToDos(true);

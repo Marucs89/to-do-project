@@ -1,9 +1,5 @@
-#root{
-  display: flex;
-  flex-direction: row;
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
-  gap: 5rem;
-  background-color: rgb(31, 30, 30);
+#mainscreen{
+    height: inherit;
+    width: inherit;
+    margin: inherit;
 }

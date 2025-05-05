@@ -7,17 +7,31 @@ th {
 
 .cell-div{
   color: white;
-  padding-left: 10px;
-}
-.marker-marcus{
-  background-color: rgba(54, 234, 38, 0.32);
+  font-size: 12px;
+  border: 3px transparent;
 }
 
-.marker-marcel{
-  background-color: rgba(159, 38, 234, 0.32);
+.cell-div:hover {
+  border: 3px solid whitesmoke;
+  cursor: default;
 }
 
 th > p {
   color: white;
   font-weight: bold;
+  width: 100px;
+}
+
+.modal {
+    display: none; /* Standard: unsichtbar */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* halbtransparentes Overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }

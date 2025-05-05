@@ -10,9 +10,9 @@ export enum Users {
 
 function App() {
   return (
-    <div>
+    <>
       <MainScreen />
-    </div>
+    </>
   );
 }
 

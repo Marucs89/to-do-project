@@ -1,22 +1,16 @@
-#root{
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-}
-
 #tabBar{
   display: flex;
   flex-direction: column;
-
   margin-left: 30px;
   height: 100%;
+  width: 100%;
+  justify-content: center;
 }
 
 button{
   width: 200px;
-  height: 100%;
-  margin-top: 40px;
+  height: 8%;
+  margin-top: 20%;
   background: rgb(31, 30, 30);
   font-family: 'Arial', sans-serif;
   overflow: hidden;
