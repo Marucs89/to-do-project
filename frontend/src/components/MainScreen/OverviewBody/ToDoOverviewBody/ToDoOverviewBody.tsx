@@ -11,21 +11,12 @@ export default function ToDoOverviewBody({
 }: {
   toDos: ToDos | undefined;
 }) {
-  // const dueDate = deadline
-  //   ? format(new Date(deadline), "dd.MM.yyyy")
-  //   : "no due Date!"
-
-  // const bearbeiter = arbeiter
-  //   ? `${arbeiter[0].name} ${arbeiter[0].lastname}`
-  //   : "no Bearbeiter";
-  // const stage = status?.name;
   useEffect(() => {
     const buttons = document.querySelectorAll(".tabBtn");
     console.log("ccc", buttons);
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         buttons.forEach((btn) => btn.classList.remove("active"));
-        console.log("test");
         button.classList.add("active");
       });
     });
@@ -113,20 +104,22 @@ export default function ToDoOverviewBody({
 
   return (
     <div>
-      <table
-        className='uk-table uk-margin-top uk-margin-right'
-        style={{
-          borderCollapse: "separate",
-          borderSpacing: "40px",
-        }}
-      >
-        <thead>
-          <tr>{createThisWeekTableHeader()}</tr>
-        </thead>
-        <tbody>
-          <tr>{createThisWeekTableBody(toDos)}</tr>
-        </tbody>
-      </table>
+      <div>
+        <table
+          className='uk-table uk-margin-top uk-margin-right'
+          style={{
+            borderCollapse: "separate",
+            borderSpacing: "40px",
+          }}
+        >
+          <thead>
+            <tr>{createThisWeekTableHeader()}</tr>
+          </thead>
+          <tbody>
+            <tr>{createThisWeekTableBody(toDos)}</tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
