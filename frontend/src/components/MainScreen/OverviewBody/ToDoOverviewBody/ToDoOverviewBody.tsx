@@ -1,28 +1,37 @@
 import "./ToDoOverviewBody.css";
-import { ToDos } from "../../../../../schemas/to-do";
+import { ToDos } from "../../../../schemas/to-do";
 import { addDays, format, nextSunday, previousMonday } from "date-fns";
 import _ from "lodash";
 import { createMarkerForTask } from "./helper";
 import Modal from "./Modal";
+import { useEffect } from "react";
 
 export default function ToDoOverviewBody({
   toDos,
-  noToDos,
 }: {
   toDos: ToDos | undefined;
-  noToDos: boolean;
 }) {
-  console.log("date of ToDo: ", toDos ? toDos[0].deadline : null);
   // const dueDate = deadline
   //   ? format(new Date(deadline), "dd.MM.yyyy")
-  //   : "no due Date!";
+  //   : "no due Date!"
 
   // const bearbeiter = arbeiter
   //   ? `${arbeiter[0].name} ${arbeiter[0].lastname}`
   //   : "no Bearbeiter";
   // const stage = status?.name;
+  useEffect(() => {
+    const buttons = document.querySelectorAll(".tabBtn");
+    console.log("ccc", buttons);
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        console.log("test");
+        button.classList.add("active");
+      });
+    });
+  }, []);
+
   const now = new Date();
-  console.log("ToDos in OverviewBody: ", toDos);
   let monday;
   if (now.getUTCDay() === 1) {
     monday = now;
@@ -47,15 +56,12 @@ export default function ToDoOverviewBody({
     return tableHeaders;
   };
 
-  const createThisWeekTableBody = (
-    toDos: ToDos | undefined,
-    noToDos: boolean
-  ) => {
+  const createThisWeekTableBody = (toDos: ToDos | undefined) => {
     const sunday = nextSunday(new Date());
     let currentDate = monday;
     const tableBodys = [];
-    let i = 0;
     while (currentDate <= sunday) {
+      let i = 0;
       const currentMonthYear = format(currentDate, "dd/MM/yy");
       const currentToDos = _.filter(toDos, (toDo) => {
         return (
@@ -69,19 +75,20 @@ export default function ToDoOverviewBody({
             marginTop: "2px",
           }}
         >
-          {currentToDos.length > 0 || !noToDos ? (
+          {currentToDos.length > 0 &&
             currentToDos.map((toDo) => {
               const paddingTop = i === 0 ? "0px" : "16px";
               i++;
               return (
                 <div>
                   <div
-                    className='uk-grid uk-margin-small-left cell-div'
+                    className='uk-grid  cell-div'
                     style={{
                       background: createMarkerForTask(toDo.arbeiter),
                       marginTop: paddingTop,
                       padding: "4px",
                       borderRadius: "4px",
+                      marginLeft: "5px",
                     }}
                     onClick={() =>
                       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -95,16 +102,12 @@ export default function ToDoOverviewBody({
                   <Modal toDo={toDo} />
                 </div>
               );
-            })
-          ) : (
-            <>
-              <p>Empty</p>
-            </>
-          )}
+            })}
         </td>
       );
       currentDate = addDays(currentDate, 1);
     }
+    console.log("Tablebodys: ", tableBodys);
     return tableBodys;
   };
 
@@ -121,7 +124,7 @@ export default function ToDoOverviewBody({
           <tr>{createThisWeekTableHeader()}</tr>
         </thead>
         <tbody>
-          <tr>{createThisWeekTableBody(toDos, noToDos)}</tr>
+          <tr>{createThisWeekTableBody(toDos)}</tr>
         </tbody>
       </table>
     </div>

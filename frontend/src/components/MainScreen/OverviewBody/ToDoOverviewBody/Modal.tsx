@@ -1,4 +1,4 @@
-import { ToDos } from "../../../../../schemas/to-do";
+import { ToDos } from "../../../../schemas/to-do";
 
 export default function Modal({ toDo }: { toDo: ToDos[0] }) {
   return (

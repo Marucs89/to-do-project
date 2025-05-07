@@ -1,17 +1,18 @@
-import { ToDos } from "../../../../../schemas/to-do";
+import { ToDos } from "../../../../schemas/to-do";
 
 export function createMarkerForTask(bearbeiter: ToDos[0]["arbeiter"]) {
   const backgroundColors = bearbeiter.map((arbeiter) => {
     let markerColor;
+
     switch (arbeiter.name) {
       case "Marcus":
-        markerColor = "rgb(21, 255, 0)";
+        markerColor = "rgb(5, 177, 199)";
         break;
       case "Finn":
-        markerColor = "rgb(255, 9, 1)";
+        markerColor = "rgb(163, 5, 0)";
         break;
       case "Jonas":
-        markerColor = "rgb(170, 170, 170)";
+        markerColor = "rgb(208, 4, 133)";
         break;
       case "Marcel":
         markerColor = "rgb(128, 0, 255)";

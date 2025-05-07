@@ -3,3 +3,8 @@
     width: inherit;
     margin: inherit;
 }
+
+#leftSideArea{
+    display: flex;
+    flex-direction: column;
+}

@@ -1,0 +1,64 @@
+#addToDoBtn{
+    font-size: 1.25rem;
+    width: 130px;
+    height: 60px;
+    margin-left: 15%;
+    margin-top: 25%;
+    display: grid;
+    place-content: center;
+    color: white;
+    text-shadow: 0 1px 0 #000;
+
+    --border-angle: 0turn; 
+    --main-bg: conic-gradient(
+        from var(--border-angle),
+        rgb(46, 25, 69),
+        rgb(45, 20, 62) 5%,
+        rgb(55, 35, 81) 60%,
+        rgb(52, 24, 79) 95%
+      );
+    --second-bg: conic-gradient(
+        from var(--border-angle),
+        rgb(139, 139, 139),
+        rgb(166, 164, 166) 5%,
+        rgb(192, 192, 192) 60%,
+        rgb(217, 217, 218) 95%
+      );
+
+
+    border: solid 5px transparent;
+    border-radius: 2em;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+      
+    background: 
+    var(--main-bg) padding-box,
+    var(--gradient-border) border-box, 
+    var(--main-bg) border-box;
+  
+    background-position: center center;
+
+    animation: bg-spin 3s linear infinite;
+    
+    &:hover{
+        box-shadow: 0px 0px 30px 2px #8b6491;
+        color: black;
+        background: 
+        var(--second-bg) padding-box,
+        var(--gradient-border) border-box, 
+        var(--second-bg) border-box;
+    }
+           
+      
+}
+  
+@property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+    to {
+      --border-angle: 1turn;
+    }
+  }
