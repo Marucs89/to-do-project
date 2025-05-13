@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from backend.database.tables import ToDo, Topics, Bearbeiter
-from backend.api.baseModels import CreateToDo, DoneUpdate, TodoUpdate
+from backend.api.requests import CreateToDo, DoneUpdate, TodoUpdate
 from backend.api.helperFunc import create_todo_helper, create_helper, read_todo_helper, change_helper, delete_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
+from backend.repositories.todo_repository import TodoRepository
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -46,8 +47,7 @@ def read_todos(todoid: int, session: SessionDep):
         2. If not found, raise a 404 error
         3. If found, process and return the todo data
     """
-    statement = select(ToDo).where(ToDo.todo_id == todoid)
-    todos = session.exec(statement).unique().all()
+    todos = TodoRepository.get_by_id(session, todoid)
     if not todos:
         raise HTTPException(status_code=404, detail=f"Todo '{todoid}' nicht gefunden")
     return read_todo_helper(todos)
@@ -72,8 +72,8 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     result = session.exec(statement).first()
     if not result:
         raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
-    statement = select(ToDo).where(ToDo.topic_id == result)
-    todos = session.exec(statement).unique().all()
+    todos = TodoRepository.get_by_id(session, result)
+    print(todos)
     if not todos:
         raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)

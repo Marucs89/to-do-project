@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from backend.database.tables import Bearbeiter, Arbeiter
 from typing import Annotated
-from backend.api.baseModels import CreateArbeiter, AddArbeiter, ArbeiterUpdate
+from backend.api.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate
 from backend.api.helperFunc import create_helper, change_helper
 from backend.database.config import Session, get_session
 
