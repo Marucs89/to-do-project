@@ -1,7 +1,6 @@
 from fastapi import HTTPException
-from sqlmodel import select
-from backend.database.tables import ToDo, Topics, Status, Arbeiter
-from backend.api.requests import CreateToDo
+from backend.database.tables import ToDo
+from backend.models.requests import CreateToDo
 
 
 def create_todo_helper(data:CreateToDo):

@@ -1,7 +1,8 @@
 from sqlmodel import select
 from backend.database.tables import ToDo, Topics
-from backend.api.requests import CreateTopicStatus, TopicUpdate
-from backend.api.helperFunc import create_helper, change_helper
+from backend.models.requests import CreateTopicStatus, TopicUpdate
+from backend.services.change_services import change_helper
+from backend.services.create_services import create_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from fastapi import APIRouter, Depends

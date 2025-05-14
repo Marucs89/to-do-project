@@ -2,7 +2,7 @@ from sqlmodel import select
 from backend.database.config import create_db_and_tables, create_database_helper
 from backend.database.tables import ToDo, Topics, Status, Bearbeiter, Arbeiter
 from datetime import datetime
-from backend.api.helperFunc import create_helper
+from backend.services.create_services import create_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from fastapi import APIRouter, Depends

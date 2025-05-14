@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from backend.database.tables import Bearbeiter, Arbeiter
 from typing import Annotated
-from backend.api.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate
-from backend.api.helperFunc import create_helper, change_helper
+from backend.models.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate
+from backend.services.create_services import create_helper
+from backend.services.change_services import change_helper
 from backend.database.config import Session, get_session
 from backend.repositories.repository import ArbeiterRepository
 

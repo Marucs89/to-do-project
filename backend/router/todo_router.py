@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
-from backend.database.tables import ToDo, Topics, Bearbeiter
-from backend.api.requests import CreateToDo, DoneUpdate, TodoUpdate
-from backend.api.helperFunc import create_todo_helper, create_helper, read_todo_helper, change_helper, delete_helper
+from backend.database.tables import ToDo, Bearbeiter
+from backend.models.requests import CreateToDo, DoneUpdate, TodoUpdate
+from backend.services.change_services import change_helper
+from backend.services.delete_services import delete_helper
+from backend.services.create_services import create_helper, create_todo_helper
+from backend.services.read_services import read_todo_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from backend.repositories.repository import TodoRepository

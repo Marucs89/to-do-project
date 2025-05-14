@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from backend.database.tables import Bearbeiter
-from backend.api.requests import DeleteBearbeiterMitarbeiter
-from backend.api.helperFunc import delete_helper
+from backend.models.requests import DeleteBearbeiterMitarbeiter
+from backend.services.delete_services import delete_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from backend.repositories.repository import BearbeiterRepository

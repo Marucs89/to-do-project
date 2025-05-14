@@ -1,6 +1,6 @@
 from sqlmodel import select
 from backend.database.tables import ToDo, Topics, Bearbeiter, Arbeiter
-from backend.api.requests import DeleteBearbeiterMitarbeiter, AddArbeiter
+from backend.models.requests import DeleteBearbeiterMitarbeiter, AddArbeiter
 
 
 class TodoRepository:

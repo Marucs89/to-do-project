@@ -1,8 +1,4 @@
 from fastapi import HTTPException
-from sqlmodel import select
-from backend.database.tables import ToDo, Topics, Status, Arbeiter
-from backend.api.requests import CreateToDo
-
 
 def delete_helper(statement, session):
     """

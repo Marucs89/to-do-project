@@ -2,12 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from backend.database.config import create_db_and_tables
-from backend.router import todo_router
-from backend.router import arbeiter_router
-from backend.router import bearbeiter_router
-from backend.router import status_router
-from backend.router import topics_router
-from backend.router import misc_router
+from backend.router import todo_router, arbeiter_router, bearbeiter_router, status_router, topics_router, misc_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
