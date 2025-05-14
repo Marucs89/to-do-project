@@ -6,6 +6,7 @@ from backend.api.helperFunc import create_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from fastapi import APIRouter, Depends
+from backend.repositories.repository import MiscRepository
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -53,8 +54,7 @@ def create_beispieldaten(session: SessionDep):
     create_helper(todo, session)
 
     # Get the ID of the created todo and connect it with the worker
-    statement = select(ToDo.todo_id)
-    result = session.exec(statement).unique().all()
+    result = MiscRepository.get_todoid(session)
     lasttodo = max(result)
     bearbeiter = Bearbeiter(todo_id = lasttodo, mitarbeiter_id = 1)
     create_helper(bearbeiter, session)

@@ -5,7 +5,7 @@ from backend.api.requests import CreateToDo, DoneUpdate, TodoUpdate
 from backend.api.helperFunc import create_todo_helper, create_helper, read_todo_helper, change_helper, delete_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
-from backend.repositories.todo_repository import TodoRepository
+from backend.repositories.repository import TodoRepository
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -68,12 +68,10 @@ def read_todos_by_topic(topic: str, session: SessionDep):
         4. If no todos found with that topic, raise a 404 error
         5. Process and return the todo data
     """
-    statement = select(Topics.topic_id).where(Topics.name == topic)
-    result = session.exec(statement).first()
+    result = TodoRepository.get_by_topic(session, topic)
     if not result:
         raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
     todos = TodoRepository.get_by_id(session, result)
-    print(todos)
     if not todos:
         raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
     return read_todo_helper(todos)

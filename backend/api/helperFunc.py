@@ -7,6 +7,7 @@ from backend.api.requests import CreateToDo
 
 ###########--Post--##########
 
+
 def create_todo_helper(data:CreateToDo):
     """
     Creates a ToDo object from the provided CreateToDo data model.
@@ -44,7 +45,9 @@ def create_helper(data, session):
         session.rollback()
         raise  HTTPException(status_code=400, detail=f"Fehler beim Erstellen: {str(e)}")
 
+
 ##########--Get--##########
+
 
 def read_todo_helper(read_todo:list):
     """
@@ -89,7 +92,9 @@ def read_todo_helper(read_todo:list):
         result.append(todo_dict)
     return result
 
+
 ##########--Put--##########
+
 
 def change_helper(session, statement, field_name, new_value, test=False, table=None):
     """
@@ -147,7 +152,9 @@ def change_helper(session, statement, field_name, new_value, test=False, table=N
     session.refresh(attribute)
     return {"status": "success"}
 
+
 ##########--Delete--##########
+
 
 def delete_helper(statement, session):
     """

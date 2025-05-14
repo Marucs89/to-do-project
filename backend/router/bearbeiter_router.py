@@ -5,6 +5,7 @@ from backend.api.requests import DeleteBearbeiterMitarbeiter
 from backend.api.helperFunc import delete_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
+from backend.repositories.repository import BearbeiterRepository
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -30,8 +31,7 @@ def delete_bearbeiter_mitarbeiter(to_delete: DeleteBearbeiterMitarbeiter, sessio
     Raises:
         HTTPException: If attempting to delete the only worker from a todo
     """
-    statement = select(Bearbeiter).where(Bearbeiter.todo_id == to_delete.todo_id)
-    result: list = session.exec(statement).unique().all()
+    result: list = BearbeiterRepository.delete_mitarbeiter(session, to_delete)
     if len(result) < 2:
         raise HTTPException(status_code=400, detail="Es gibt nur einen Mitarbeiter für das ToDo!")
     else:

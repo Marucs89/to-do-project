@@ -5,6 +5,7 @@ from typing import Annotated
 from backend.api.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate
 from backend.api.helperFunc import create_helper, change_helper
 from backend.database.config import Session, get_session
+from backend.repositories.repository import ArbeiterRepository
 
 
 router = APIRouter()
@@ -28,9 +29,8 @@ def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
     """
     mitarbeiter = Arbeiter(name=arbeiter_data.name,lastname=arbeiter_data.lastname,email=arbeiter_data.email)
     create_helper(mitarbeiter, session)
-    statemen = select(Arbeiter.mitarbeiter_id)
-    result = session.exec(statemen)
-    toretrun = {"status": "success", "mitarbeiter_id": str(max(result))}
+    result = ArbeiterRepository.get_mitarbeiter_id(session)
+    toretrun = {"status": "success", "mitarbeiter_id": result}
     return toretrun
 
 @router.post("/add-arbeiter")
@@ -47,11 +47,7 @@ def add_arbeiter(to_add: AddArbeiter, session: SessionDep):
         2. If workers can be added, create new Bearbeiter entries for each worker
         3. Return success status or error if worker is already assigned
     """
-    statement = select(Bearbeiter).where(
-        Bearbeiter.todo_id == to_add.todo_id,
-        Bearbeiter.mitarbeiter_id != to_add.mitarbeiter_id
-    )
-    result = session.exec(statement)
+    result = ArbeiterRepository.post_mitarbeiter(session, to_add)
     if result:
         for x in to_add.mitarbeiter_id:
             add = Bearbeiter(todo_id = to_add.todo_id, mitarbeiter_id = x)
@@ -75,8 +71,7 @@ def read_mitarbeiter_by_name(name:str, session:SessionDep):
         2. If found, return the worker's details (ID, name, lastname, email)
         3. If not found, raise a 404 error
     """
-    statement = select(Arbeiter).where(Arbeiter.name == name)
-    result= session.exec(statement).first()
+    result= ArbeiterRepository.get_mitarbeiter(session, name)
     if result:
         toretrun = {"mitarbeiter_id": result.mitarbeiter_id, "name": result.name, "lastname": result.lastname, "email": result.email}
         return toretrun
