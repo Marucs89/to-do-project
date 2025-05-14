@@ -1,7 +1,6 @@
-from typing import Annotated
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from backend.database.config import create_db_and_tables
 from backend.router import todo_router
 from backend.router import arbeiter_router
