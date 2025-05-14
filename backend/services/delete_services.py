@@ -13,12 +13,13 @@ def delete_helper(statement, session):
         HTTPException 400: If any error occurs during a deletion process
     """
     try:
-        result = session.exec(statement).unique()
-        todelete = result.first()
-        if not todelete:
-            raise HTTPException(status_code=404, detail=f"Es wurde kein eintrag in der tabelle gefunden")
-        session.delete(todelete)
-        session.commit()
+        result = session.exec(statement).unique().all()
+        for x in result:
+            if not x:
+                raise HTTPException(status_code=404, detail=f"Es wurde kein eintrag in der tabelle gefunden")
+            session.delete(x)
+            session.commit()
+        return result
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=400, detail=f"Fehler beim löschen Fehler:'{e}'")

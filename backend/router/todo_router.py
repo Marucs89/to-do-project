@@ -9,11 +9,12 @@ from backend.services.read_services import read_todo_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from backend.repositories.repository import TodoRepository
+from backend.models.responses import StandardResponse
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
-@router.post("/create-todo")
+@router.post("/create-todo", response_model= StandardResponse)
 def create_todo(todo_data: CreateToDo, session: SessionDep):
     """
     Create a new todo item and associate it with workers.
@@ -30,10 +31,12 @@ def create_todo(todo_data: CreateToDo, session: SessionDep):
     """
     todo = create_todo_helper(todo_data)
     create_helper(todo, session)
+    data: list = [todo]
     for x in todo_data.mitarbeiter_id:  # Associate each worker with the todo
         neuer_bearbeiter = Bearbeiter(todo_id=todo.todo_id, mitarbeiter_id=x)
         create_helper(neuer_bearbeiter, session)
-    return {"status":"success"}
+    session.refresh(todo)
+    return {"status":"success", "message": "the database operation was successful", "data": data}
 
 
 @router.get("/todos-by-id")
@@ -80,7 +83,7 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     return read_todo_helper(todos)
 
 
-@router.put("/change-todo")
+@router.put("/change-todo", response_model= StandardResponse)
 def update_todo(new_todo: TodoUpdate, session: SessionDep):
     """
     Update a todo item with new values.
@@ -98,15 +101,19 @@ def update_todo(new_todo: TodoUpdate, session: SessionDep):
         A success status message
     """
     statement = select(ToDo).where(new_todo.todo_id == ToDo.todo_id)
+    waschanged = f"the following data was changed on todo_id '{new_todo.todo_id}': "
     if new_todo.name:
         change_helper(session, statement, 'name', new_todo.name)
+        waschanged = waschanged + "name, "
     if new_todo.description:
         change_helper(session, statement, "description", new_todo.description)
+        waschanged = waschanged + "description, "
     if new_todo.deadline:
         change_helper(session, statement, "deadline", new_todo.deadline)
-    return {"status": "success"}
+        waschanged = waschanged + "deadline"
+    return {"status": "success", "message": "the operation was poggers!", "data": waschanged}
 
-@router.put("/change-done")
+@router.put("/change-done", response_model= StandardResponse)
 def update_done(new_done: DoneUpdate, session: SessionDep):
     """
     Update the completion status of a todo item.
@@ -121,11 +128,12 @@ def update_done(new_done: DoneUpdate, session: SessionDep):
         3. Return the result from change_helper
     """
     statement = select(ToDo).where(ToDo.todo_id == new_done.todo_id)
-    return change_helper(session, statement, 'done', new_done.done)
+    change_helper(session, statement, 'done', new_done.done)
+    return {"status": "success", "message": "I hope you're done :^)", "data": "well there is no data :^("}
 
 
 # DANGER: This endpoint allows deleting todo items
-@router.delete("/delete-todo")
+@router.delete("/delete-todo", response_model= StandardResponse)
 def delete_todo(todo_id: int, session:SessionDep):
     """
     Delete a todo item and its worker associations.
@@ -144,5 +152,5 @@ def delete_todo(todo_id: int, session:SessionDep):
     delete_helper(statement, session)
     # Delete the todo item itself
     statement = select(ToDo).where(ToDo.todo_id == todo_id)
-    delete_helper(statement, session)
-    return {"status": "success"}
+    data = delete_helper(statement, session)
+    return {"status": "success", "message": "oh no I hope you delete the right todo", "data": data}
