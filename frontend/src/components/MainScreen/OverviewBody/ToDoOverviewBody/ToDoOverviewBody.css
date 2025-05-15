@@ -1,8 +1,22 @@
+.tableContainer{
+  margin-left: 5%;
+  height: 90%;
+  margin-top: 5%;
+}
+
+table{
+  height: 35%;
+}
+
 th {
   border-bottom: solid gray 2px;
-  width: 160px;
+  width: 120px;
   justify-items: center;
   font-size: 14px;
+}
+
+td{
+  align-content: start;
 }
 
 .cell-div{
@@ -33,4 +47,72 @@ th > p {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+}
+
+.embla {
+  overflow: hidden;
+  position: relative;
+}
+.embla__container {
+  display: flex;
+  height: 100%;
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0; 
+}
+
+#sliderButtonsDiv{
+  position: absolute;
+  bottom: 20%;
+  left: 45%;
+  width: 60px;
+
+}
+
+.sliderButtons{
+  display: grid;
+  place-content: center;
+  color: white;
+  text-shadow: 0 1px 0 #000;
+
+  --border-angle: 0turn; 
+  --main-bg: conic-gradient(
+        from var(--border-angle),
+        rgb(46, 25, 69),
+        rgb(45, 20, 62) 5%,
+        rgb(55, 35, 81) 60%,
+        rgb(52, 24, 79) 95%
+    );
+
+    border: solid 2px transparent;
+    border-radius: .5rem;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+     
+    background: 
+    var(--main-bg) padding-box,
+    var(--gradient-border) border-box, 
+    var(--main-bg) border-box;
+  
+    background-position: center center;
+
+    animation: bg-spin 3s linear infinite;
+
+  &:hover{
+    cursor: pointer;
+
+  }
+
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+  to {
+    --border-angle: 1turn;
+  }
 }

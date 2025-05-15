@@ -4,16 +4,42 @@ import { addDays, format, nextSunday, previousMonday } from "date-fns";
 import _ from "lodash";
 import { createMarkerForTask } from "./helper";
 import Modal from "./Modal";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 
 export default function ToDoOverviewBody({
   toDos,
 }: {
   toDos: ToDos | undefined;
 }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+
+  const scrollPrev = useCallback(
+    () => emblaApi && emblaApi.scrollPrev(),
+    [emblaApi]
+  );
+  const scrollNext = useCallback(
+    () => emblaApi && emblaApi.scrollNext(),
+    [emblaApi]
+  );
+
+  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
+  const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setPrevBtnEnabled(emblaApi.canScrollPrev());
+    setNextBtnEnabled(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+  }, [emblaApi, onSelect]);
+
   useEffect(() => {
     const buttons = document.querySelectorAll(".tabBtn");
-    console.log("ccc", buttons);
     buttons.forEach((button) => {
       button.addEventListener("click", () => {
         buttons.forEach((btn) => btn.classList.remove("active"));
@@ -98,27 +124,70 @@ export default function ToDoOverviewBody({
       );
       currentDate = addDays(currentDate, 1);
     }
-    console.log("Tablebodys: ", tableBodys);
     return tableBodys;
   };
 
   return (
-    <div>
-      <div>
-        <table
-          className='uk-table uk-margin-top uk-margin-right'
-          style={{
-            borderCollapse: "separate",
-            borderSpacing: "40px",
-          }}
+    <div className='tableContainer embla' ref={emblaRef}>
+      <div className='embla__container'>
+        <div className='embla__slide'>
+          <table
+            style={{
+              borderSpacing: "40px",
+            }}
+          >
+            <thead>
+              <tr>{createThisWeekTableHeader()}</tr>
+            </thead>
+            <tbody>
+              <tr>{createThisWeekTableBody(toDos)}</tr>
+            </tbody>
+          </table>
+          <table
+            style={{
+              borderSpacing: "40px",
+            }}
+          >
+            <thead>
+              <tr>{createThisWeekTableHeader()}</tr>
+            </thead>
+            <tbody>
+              <tr>{createThisWeekTableBody(toDos)}</tr>
+            </tbody>
+          </table>
+        </div>
+        <div className='embla__slide'>
+          <table
+            style={{
+              borderSpacing: "40px",
+            }}
+          >
+            <thead>
+              <tr>{createThisWeekTableHeader()}</tr>
+            </thead>
+            <tbody>
+              <tr>{createThisWeekTableBody(toDos)}</tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id='sliderButtonsDiv'>
+        <button
+          className='sliderButtons'
+          style={{ position: "absolute", left: 0 }}
+          onClick={scrollPrev}
+          disabled={!prevBtnEnabled}
         >
-          <thead>
-            <tr>{createThisWeekTableHeader()}</tr>
-          </thead>
-          <tbody>
-            <tr>{createThisWeekTableBody(toDos)}</tr>
-          </tbody>
-        </table>
+          {"<"}
+        </button>
+        <button
+          className='sliderButtons'
+          style={{ position: "absolute", right: 0 }}
+          onClick={scrollNext}
+          disabled={!nextBtnEnabled}
+        >
+          {">"}
+        </button>
       </div>
     </div>
   );

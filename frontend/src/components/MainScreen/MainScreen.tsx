@@ -14,14 +14,15 @@ export enum Topics {
 
 export default function MainScreen() {
   const [toDoData, setToDoData] = useState<ToDos>();
+  const [topic, setTopic] = useState<string>("");
 
   return (
-    <div id='mainscreen' className='uk-grid uk-child-width-1-4'>
-      <div id="leftSideArea">
-        <AddToDoBtn />
-        <TopicTabs setToDoData={setToDoData} />
+    <div id='mainscreen'>
+      <div id='leftSideArea'>
+        <AddToDoBtn currentTopic={topic} />
+        <TopicTabs setToDoData={setToDoData} setTopic={setTopic} />
       </div>
-      <div style={{ paddingLeft: 0 }}>
+      <div id='rightSideArea'>
         <ToDoOverviewBody toDos={toDoData} />
       </div>
     </div>

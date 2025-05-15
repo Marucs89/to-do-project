@@ -5,16 +5,17 @@ import { ToDos } from "../../../schemas/to-do";
 
 export default function TopicTabs({
   setToDoData,
+  setTopic,
 }: {
   setToDoData: React.Dispatch<React.SetStateAction<ToDos | undefined>>;
+  setTopic: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  
-
   return (
     <div id='tabBar'>
       <button
         className='tabBtn'
         onClick={async () => {
+          setTopic(Topics.Freizeit);
           const freizeitToDoData = await getToDoDataForTopic(Topics.Freizeit);
           setToDoData(freizeitToDoData);
         }}
@@ -24,6 +25,7 @@ export default function TopicTabs({
       <button
         className='tabBtn'
         onClick={async () => {
+          setTopic(Topics.Arbeit);
           const arbeitToDoData = await getToDoDataForTopic(Topics.Arbeit);
           setToDoData(arbeitToDoData);
         }}
@@ -33,6 +35,7 @@ export default function TopicTabs({
       <button
         className='tabBtn'
         onClick={async () => {
+          setTopic(Topics.Schule);
           const schulToDoData = await getToDoDataForTopic(Topics.Schule);
           setToDoData(schulToDoData);
         }}
@@ -42,6 +45,7 @@ export default function TopicTabs({
       <button
         className='tabBtn'
         onClick={async () => {
+          setTopic(Topics.Sport);
           const sportToDoData = await getToDoDataForTopic(Topics.Sport);
           setToDoData(sportToDoData);
         }}

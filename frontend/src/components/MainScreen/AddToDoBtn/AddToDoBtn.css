@@ -2,8 +2,8 @@
     font-size: 1.25rem;
     width: 130px;
     height: 60px;
-    margin-left: 15%;
-    margin-top: 25%;
+    margin-left: 28%;
+    margin-top: 35%;
     display: grid;
     place-content: center;
     color: white;
@@ -40,15 +40,14 @@
     animation: bg-spin 3s linear infinite;
     
     &:hover{
-        box-shadow: 0px 0px 30px 2px #8b6491;
-        color: black;
+        box-shadow: 0px 0px 30px 2px rgb(52, 24, 79);
+        color: #9706ae;
+        cursor: pointer;
         background: 
         var(--second-bg) padding-box,
         var(--gradient-border) border-box, 
         var(--second-bg) border-box;
     }
-           
-      
 }
   
 @property --border-angle {
@@ -62,3 +61,55 @@
       --border-angle: 1turn;
     }
   }
+
+.myOffCanvas{
+  width: 500px;
+}
+
+form{
+  display: flex;
+  flex-direction: column;
+  margin-top: 10%;
+  width: 60%;
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+#createToDoDiv{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  gap: 30px;
+}
+
+#createToDoForm{
+  height: inherit;
+  display: inherit;
+  flex-direction: column;
+  align-items: center;
+  gap: 5%;
+}
+
+#name ,#topic{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60%;
+}
+
+#topics{
+  width: 90%;
+  text-align: center;
+  font-size: 16px;
+  &:hover{
+    cursor: pointer;
+  }
+}
+

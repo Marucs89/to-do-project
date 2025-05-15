@@ -2,9 +2,14 @@
     height: inherit;
     width: inherit;
     margin: inherit;
+    display: flex;
 }
 
 #leftSideArea{
     display: flex;
     flex-direction: column;
+}
+
+#rightSideArea{
+    width: 80%;
 }
