@@ -1,12 +1,15 @@
 import { getTopicIdByName } from "../../../global";
 import { createToDo } from "../../../services/api";
 import type { crateToDoInput } from "../../../services/api";
-import { Topics } from "../MainScreen";
+import Select, { StylesConfig } from "react-select";
+import makeAnimated from "react-select/animated";
 import "./AddToDoBtn.css";
 import "uikit";
 
 export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
+  const animatedComponent = makeAnimated();
   const currentTopicId = getTopicIdByName(currentTopic);
+  // const currentAssigneesId = getAssigneesByName();
   console.log("Test: ", currentTopicId);
   const now = new Date();
   const input: crateToDoInput = {
@@ -16,6 +19,19 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
   };
 
   const allTopics = ["Freizeit", "Arbeit", "Schule", "Sport"];
+  const assigneesOptions = [
+    { value: "Finn", label: "Finn" },
+    { value: "Marcel", label: "Marcel" },
+    { value: "Jonas", label: "Jonas" },
+    { value: "Marcus", label: "Marcus" },
+  ];
+
+  type TAssigneesOptions = typeof assigneesOptions;
+  const selectStyles: StylesConfig<TAssigneesOptions> = {
+    option: () => {
+      return { color: "black" };
+    },
+  };
 
   return (
     <div>
@@ -27,10 +43,6 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
         <div className='uk-offcanvas-bar myOffCanvas' id='createToDoDiv'>
           <form id='createToDoForm'>
             <h1>create a new To Do: </h1>
-            <div id='name'>
-              <h2>To Do Name:</h2>
-              <input type='text' />
-            </div>
             <div id='topic'>
               <h2>To Do Topic:</h2>
               <select name='topics' id='topics'>
@@ -45,6 +57,23 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
                   return <option value={topic}>{topic}</option>;
                 })}
               </select>
+            </div>
+            <div id='name'>
+              <h2>To Do Name:</h2>
+              <input type='text' />
+            </div>
+            <div id='description'>
+              <h2>To Do Description:</h2>
+              <input type='text' />
+            </div>
+            <div id='assignees'>
+              <h2>To Do Assignee/s:</h2>
+              <Select
+                styles={selectStyles}
+                options={assigneesOptions}
+                components={animatedComponent}
+                isMulti
+              />
             </div>
             <button
               type='submit'
