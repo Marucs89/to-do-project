@@ -100,6 +100,7 @@ def update_todo(new_todo: TodoUpdate, session: SessionDep):
     Returns:
         A success status message
     """
+    # alles in einem todo ändern
     statement = select(ToDo).where(new_todo.todo_id == ToDo.todo_id)
     waschanged = f"the following data was changed on todo_id '{new_todo.todo_id}': "
     if new_todo.name:

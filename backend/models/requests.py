@@ -29,19 +29,24 @@ class CreateArbeiter(BaseModel):
 
     Attributes:
         name: First name of the employee
-        lastname: Last name of the employee
-        email: Optional email address of the employee
     """
-    name: str
-    lastname: str
-    email: str | None = None
+    name: list[str]
 
-class CreateTopicStatus(BaseModel):
+class CreateTopic(BaseModel):
     """
-    Model to create a new topic or status category.
+    Model to create a new topic category.
 
     Attributes:
-        name: Name of the topic or status
+        name: a List of Names to add to the topic
+    """
+    name: list[str]
+
+class CreateStatus(BaseModel):
+    """
+    Model to create a new status category.
+
+    Attributes:
+        name: Name of the status
     """
     name: str
 
@@ -140,3 +145,6 @@ class DeleteBearbeiterMitarbeiter(BaseModel):
     """
     todo_id:int
     mitarbeiter_id: list[int] = []
+
+class DeleteArbeiter(BaseModel):
+    mitarbeiter_id: list[int]

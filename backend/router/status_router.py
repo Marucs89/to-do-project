@@ -1,6 +1,6 @@
 from sqlmodel import select
 from backend.database.tables import ToDo, Status
-from backend.models.requests import CreateTopicStatus, StatusUpdate
+from backend.models.requests import CreateStatus, StatusUpdate
 from backend.services.change_services import change_helper
 from backend.services.create_services import create_helper
 from typing import Annotated
@@ -11,7 +11,7 @@ router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
 @router.post("/create-status")
-def create_status(status_data: CreateTopicStatus, session: SessionDep):
+def create_status(status_data: CreateStatus, session: SessionDep):
     """
     Create a new status in the database.
 
