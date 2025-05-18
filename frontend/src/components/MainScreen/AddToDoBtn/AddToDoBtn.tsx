@@ -10,9 +10,8 @@ import { addWeeks, previousSunday } from "date-fns";
 
 export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
   const animatedComponent = makeAnimated();
-  
+
   // const currentAssigneesId = getAssigneesByName();
-  console.log("Test: ", currentTopicId);
   const [toDoDate, setToDoDate] = useState<string | undefined>();
   const now = new Date();
 
@@ -101,7 +100,7 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
                 defaultValue={topicOptions[currentTopicIndex]}
                 onChange={(event) => {
                   console.log("event: ", event);
-const currentTopicId = getTopicIdByName(currentTopic);
+                  const currentTopicId = getTopicIdByName(currentTopic);
                 }}
               />
             </div>

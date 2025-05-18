@@ -38,6 +38,6 @@ export async function getAllTopics() {
   return;
 }
 
-export async getAllUsers(){
-  
+export async function getAllUsers() {
+  return;
 }
