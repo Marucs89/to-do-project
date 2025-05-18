@@ -63,22 +63,6 @@ class AddArbeiter(BaseModel):
 
 ##########--Put--##########
 
-class TodoUpdate(BaseModel):
-    """
-    Model to update an existing ToDo item's basic information.
-
-    Attributes:
-        todo_id: ID of the ToDo to be updated
-        name: Optional new title for the ToDo
-        description: Optional new description
-        deadline: Optional new deadline
-    """
-    todo_id: int
-    name: str | None = None
-    description: str | None = None
-    deadline: datetime | None = None
-    done: bool | None = None
-
 class ArbeiterUpdate(BaseModel):
     """
     Model to update employee assignments for a ToDo.
@@ -113,6 +97,25 @@ class StatusUpdate(BaseModel):
     """
     todo_id: int
     status_id: int
+
+class TodoUpdate(BaseModel):
+    """
+    Model to update an existing ToDo item's basic information.
+
+    Attributes:
+        todo_id: ID of the ToDo to be updated
+        name: Optional new title for the ToDo
+        description: Optional new description
+        deadline: Optional new deadline
+    """
+    todo_id: int
+    name: str | None = None
+    description: str | None = None
+    deadline: datetime | None = None
+    done: bool | None = None
+    #mitarbeiter_id: list[int] | None = None
+    topic_id: int | None
+    status_id: int | None
 
 class DoneUpdate(BaseModel):
     """

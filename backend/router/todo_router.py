@@ -111,7 +111,17 @@ def update_todo(new_todo: TodoUpdate, session: SessionDep):
         waschanged = waschanged + "description, "
     if new_todo.deadline:
         change_helper(session, statement, "deadline", new_todo.deadline)
-        waschanged = waschanged + "deadline"
+        waschanged = waschanged + "deadline, "
+    if new_todo.done:
+        change_helper(session, statement, "done", new_todo.done)
+        waschanged = waschanged + "done, "
+    if new_todo.topic_id:
+        change_helper(session, statement, "topic_id", new_todo.topic_id)
+        waschanged = waschanged + "topic_id, "
+    if new_todo.status_id:
+        change_helper(session, statement, "status_id", new_todo.status_id)
+        waschanged = waschanged + "status_id"
+
     return {"status": "success", "message": "the operation was poggers!", "data": waschanged}
 
 @router.put("/change-done", response_model= StandardResponse)
