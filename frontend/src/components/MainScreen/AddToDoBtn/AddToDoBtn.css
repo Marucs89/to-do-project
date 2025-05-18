@@ -17,36 +17,23 @@
         rgb(55, 35, 81) 60%,
         rgb(52, 24, 79) 95%
       );
-    --second-bg: conic-gradient(
-        from var(--border-angle),
-        rgb(139, 139, 139),
-        rgb(166, 164, 166) 5%,
-        rgb(192, 192, 192) 60%,
-        rgb(217, 217, 218) 95%
-      );
 
 
-    border: solid 5px transparent;
+    border: solid 2px white;
     border-radius: 2em;
-    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 89%, #08f, #f03 99%, transparent);
       
     background: 
-    var(--main-bg) padding-box,
-    var(--gradient-border) border-box, 
-    var(--main-bg) border-box;
+    var(--gradient-border) border-box;
+
   
     background-position: center center;
 
     animation: bg-spin 3s linear infinite;
     
     &:hover{
-        box-shadow: 0px 0px 30px 2px rgb(52, 24, 79);
-        color: #9706ae;
+
         cursor: pointer;
-        background: 
-        var(--second-bg) padding-box,
-        var(--gradient-border) border-box, 
-        var(--second-bg) border-box;
     }
 }
   
@@ -62,6 +49,51 @@
     }
   }
 
+.submitBtn{
+  width: 60%;
+  height: 50%;
+  margin-top: 20%;
+  display: grid;
+  place-content: center;
+  color: white;
+  text-shadow: 0 1px 0 #000;
+  font-size: 1.5rem;
+  --border-angle: 0turn; 
+  --main-bg: conic-gradient(
+        from var(--border-angle),
+        rgb(31, 30, 30),
+        rgb(31, 30, 30) 5%,
+        rgb(31, 30, 30) 60%,
+        rgb(31, 30, 30) 95%
+    );
+
+    border: solid 5px transparent;
+    border-radius: 1em;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, rgb(170, 215, 255), rgb(255, 184, 198) 99%, transparent);
+    --gradient-hover-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+    background:  
+    var(--main-bg) padding-box,
+    var(--gradient-border) border-box, 
+    var(--main-bg) border-box;
+  
+    background-position: center center;
+
+    animation: bg-spin 3s linear infinite;
+    
+    &:hover{
+      background-position: center center;
+      background: var(--main-bg) padding-box, var(--gradient-hover-border) border-box, var(--main-bg) border-box;
+      cursor: pointer;
+  }
+}
+
+.submitBtn.active{
+  background: 
+    var(--main-bg) padding-box,
+    var(--gradient-hover-border) border-box, 
+    var(--main-bg) border-box;
+}
+
 .myOffCanvas{
   width: 500px;
 }
@@ -74,12 +106,10 @@ form{
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 28px;
 }
 
-h2 {
-  font-size: 18px;
-}
+
 
 #createToDoDiv{
   display: flex;
@@ -94,22 +124,83 @@ h2 {
   display: inherit;
   flex-direction: column;
   align-items: center;
+  width: 90%;
   gap: 5%;
 }
 
-#name ,#topic{
+#topic, #name, #date{
   display: flex;
-  flex-direction: column;
+  gap: 15%;
+  width: 90%;
   align-items: center;
-  width: 60%;
 }
 
-#topics{
+#description{
+  display: flex;
+  gap: 15%;
   width: 90%;
-  text-align: center;
+  align-items: center;
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
+
+#nameInput{
+  width: 9.4rem;
+  height: 2rem;
   font-size: 16px;
-  &:hover{
-    cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-left: 3%;
+  padding-right: 3%;
+  &:focus{
+    outline: none;
   }
 }
 
+#descriptionInput{
+  width: 9.4rem;
+  height: 4rem;
+  justify-items: start;
+  font-size: 14px;
+  word-break: break-all;
+  resize: none;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 3%;
+  &:focus{
+    outline: none;
+  }
+}
+
+#dateInput{
+  width: 10.4rem;
+  &:hover{
+    cursor: text;
+  }
+  &:focus{
+    outline: none;
+  }
+}
+
+
+#topics{
+  width: 50%;
+  text-align: center;
+  font-size: 16px;
+}
+
+.headline{
+  font-size: 20px;
+  width: 120px;
+  margin: 0;
+}
+
+#assignees {
+  justify-items: center;
+  margin-top: 8%;
+  width: 80%;
+}
+
+#submit{
+  display: flex;
+  width: 80%;
+  justify-content: center;
+}

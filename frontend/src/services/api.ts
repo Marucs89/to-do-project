@@ -37,3 +37,7 @@ export async function createToDo(input: crateToDoInput) {
 export async function getAllTopics() {
   return;
 }
+
+export async getAllUsers(){
+  
+}
