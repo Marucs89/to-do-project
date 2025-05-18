@@ -77,6 +77,7 @@ class TodoUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     deadline: datetime | None = None
+    done: bool | None = None
 
 class ArbeiterUpdate(BaseModel):
     """
