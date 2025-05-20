@@ -34,6 +34,16 @@ class TodoRepository:
         statement = select(Topics.topic_id).where(Topics.name == topicName)
         result = self.exec(statement)
         return result.first()
+
+    def get_by_topicid(self, topicid: int):
+        statement = select(Topics.topic_id).where(Topics.topic_id == topicid)
+        result = self.exec(statement)
+        return result.first()
+
+    def get_todo_by_topicid(self, topic_id: int):
+        statement = select(ToDo).where(ToDo.topic_id == topic_id)
+        result = self.exec(statement)
+        return result.unique().all()
     
 
 class BearbeiterRepository():
