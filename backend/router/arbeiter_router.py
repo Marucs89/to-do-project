@@ -2,37 +2,46 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from backend.database.tables import Bearbeiter, Arbeiter
 from typing import Annotated
-from backend.models.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate
+from backend.models.requests import CreateArbeiter, AddArbeiter, ArbeiterUpdate, DeleteArbeiter
 from backend.services.create_services import create_helper
 from backend.services.change_services import change_helper
 from backend.database.config import Session, get_session
 from backend.repositories.repository import ArbeiterRepository
+from backend.services.delete_services import delete_helper
 
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
+@router.get("/all-arbeiter")
+def all_arbeiter(session: SessionDep):
+    return session.exec(select(Arbeiter)).unique().all()
+
+
 @router.post("/create-arbeiter")
 def create_arbeiter(arbeiter_data : CreateArbeiter, session: SessionDep):
     """
-    Create a new worker entry in the database.
+    Create one or more new worker entries in the database.
 
     Args:
-        arbeiter_data: Data for the new worker
+        arbeiter_data: Data containing a list of worker names to create
         session: Database session
 
     Actions:
-        1. Create a new worker with name, lastname and email
-        2. Save it to the database
-        3. Query for all worker IDs to find the highest (newest)
-        4. Return success status with the newly created worker ID
+        1. For each name in the list, create a new worker with that name
+        2. Save each worker to the database
+        3. Query for each worker's ID after creation
+        4. Return success status with all newly created worker IDs
     """
-    mitarbeiter = Arbeiter(name=arbeiter_data.name,lastname=arbeiter_data.lastname,email=arbeiter_data.email)
-    create_helper(mitarbeiter, session)
-    result = ArbeiterRepository.get_mitarbeiter_id(session)
-    toretrun = {"status": "success", "mitarbeiter_id": result}
-    return toretrun
+    data_for_return = []
+    for arbeiter in arbeiter_data.name:
+        mitarbeiter = Arbeiter(name=arbeiter)
+        create_helper(mitarbeiter, session)
+        result = ArbeiterRepository.get_mitarbeiter_id(session)
+        data_for_return.append(result)
+    return_data = {"status": "success", "message": "the operation was successful", "data": {"mitarbeiter_id": data_for_return}}
+    return return_data
 
 @router.post("/add-arbeiter")
 def add_arbeiter(to_add: AddArbeiter, session: SessionDep):
@@ -103,3 +112,17 @@ def update_arbeiter(new_mitarbeiter: ArbeiterUpdate, session: SessionDep):
         index += 1
         change_helper(session, statement, 'mitarbeiter_id', new_worker_id, True, Arbeiter)
     return {"status": "success"}
+
+
+@router.delete("/delete-arbeiter")
+def delete_arbeiter(arbeiter_ids_to_delete: DeleteArbeiter, session: SessionDep):
+    # Delete all worker associations for this todo
+    deleted_data:list = []
+    for arbeiter_id in arbeiter_ids_to_delete.mitarbeiter_id:
+        statement = select(Bearbeiter).where(Bearbeiter.mitarbeiter_id == arbeiter_id)
+        delete_helper(statement, session)
+        # Delete the todo item itself
+        statement = select(Arbeiter).where(Arbeiter.mitarbeiter_id == arbeiter_id)
+        data = delete_helper(statement, session)
+        deleted_data.append(data)
+    return {"status": "success", "message": "oh no I hope you delete the right todo", "data": deleted_data}

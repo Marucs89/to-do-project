@@ -20,9 +20,7 @@ def read_todo_helper(read_todo:list):
         arbeiter_liste = [
             {
                 "mitarbeiter_id": link.arbeiter.mitarbeiter_id,
-                "name": link.arbeiter.name,
-                "lastname": link.arbeiter.lastname,
-                "email": link.arbeiter.email
+                "name": link.arbeiter.name
             }
             for link in todo.bearbeiter_links  # Process each link in the many-to-many relationship
         ]

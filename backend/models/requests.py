@@ -29,19 +29,24 @@ class CreateArbeiter(BaseModel):
 
     Attributes:
         name: First name of the employee
-        lastname: Last name of the employee
-        email: Optional email address of the employee
     """
-    name: str
-    lastname: str
-    email: str | None = None
+    name: list[str]
 
-class CreateTopicStatus(BaseModel):
+class CreateTopic(BaseModel):
     """
-    Model to create a new topic or status category.
+    Model to create a new topic category.
 
     Attributes:
-        name: Name of the topic or status
+        name: a List of Names to add to the topic
+    """
+    name: list[str]
+
+class CreateStatus(BaseModel):
+    """
+    Model to create a new status category.
+
+    Attributes:
+        name: Name of the status
     """
     name: str
 
@@ -57,21 +62,6 @@ class AddArbeiter(BaseModel):
     mitarbeiter_id: list[int] = []
 
 ##########--Put--##########
-
-class TodoUpdate(BaseModel):
-    """
-    Model to update an existing ToDo item's basic information.
-
-    Attributes:
-        todo_id: ID of the ToDo to be updated
-        name: Optional new title for the ToDo
-        description: Optional new description
-        deadline: Optional new deadline
-    """
-    todo_id: int
-    name: str | None = None
-    description: str | None = None
-    deadline: datetime | None = None
 
 class ArbeiterUpdate(BaseModel):
     """
@@ -108,6 +98,25 @@ class StatusUpdate(BaseModel):
     todo_id: int
     status_id: int
 
+class TodoUpdate(BaseModel):
+    """
+    Model to update an existing ToDo item's basic information.
+
+    Attributes:
+        todo_id: ID of the ToDo to be updated
+        name: Optional new title for the ToDo
+        description: Optional new description
+        deadline: Optional new deadline
+    """
+    todo_id: int
+    name: str | None = None
+    description: str | None = None
+    deadline: datetime | None = None
+    done: bool | None = None
+    #mitarbeiter_id: list[int] | None = None
+    topic_id: int | None
+    status_id: int | None
+
 class DoneUpdate(BaseModel):
     """
     Model to mark a ToDo as done or not done.
@@ -140,3 +149,6 @@ class DeleteBearbeiterMitarbeiter(BaseModel):
     """
     todo_id:int
     mitarbeiter_id: list[int] = []
+
+class DeleteArbeiter(BaseModel):
+    mitarbeiter_id: list[int]

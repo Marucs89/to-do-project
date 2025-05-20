@@ -38,14 +38,10 @@ class Arbeiter(SQLModel, table=True):
     Attributes:
         mitarbeiter_id: Primary key for the worker
         name: First name of the worker
-        lastname: Last name of the worker
-        email: Email address of the worker
         todo_links: Relationship to tasks assigned to this worker
     """
     mitarbeiter_id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=100)
-    lastname: str = Field(max_length=100)
-    email: str | None = Field(max_length=100)
     # Relationship to todos
     todo_links: list["Bearbeiter"] = Relationship(back_populates="arbeiter")
 

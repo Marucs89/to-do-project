@@ -1,32 +1,71 @@
 from sqlmodel import select
-from backend.database.tables import ToDo, Topics
-from backend.models.requests import CreateTopicStatus, TopicUpdate
+from backend.database.tables import ToDo, Topics, Bearbeiter
+from backend.models.requests import CreateTopic, TopicUpdate
 from backend.services.change_services import change_helper
 from backend.services.create_services import create_helper
 from typing import Annotated
 from backend.database.config import Session, get_session
 from fastapi import APIRouter, Depends
+from backend.services.delete_services import delete_helper
+from sqlalchemy import not_
 
 router = APIRouter()
 SessionDep = Annotated[Session, Depends(get_session)]
 
+@router.get("/all-topics")
+def all_topics(session:SessionDep):
+    return session.exec(select(Topics)).unique().all()
 
 @router.post("/create-topic")
-def create_topic(topic_data: CreateTopicStatus, session: SessionDep):
+def create_topic(topic_data: CreateTopic, session: SessionDep):
     """
-    Create a new topic in the database.
+    Synchronize topics in the database with the provided list of topic names.
 
     Args:
-        topic_data: Data for the new topic (contains name field)
+        topic_data: Data containing a list of topic names to retain
         session: Database session
 
     Actions:
-        1. Create a new topic with the provided name
-        2. Save it to the database using create_helper
-        3. Return the result of create_helper
+        1. Find all topics not in the provided list of names
+        2. For each topic to be removed:
+           - Find all ToDo items associated with the topic
+           - Delete all worker assignments (Bearbeiter) for these ToDos
+           - Delete the ToDo items
+        3. Delete the topics not in the provided list
+        4. Create new topics for any names that don't already exist in the database
+        5. Return success status
     """
-    topic = Topics(name = topic_data.name)
-    return create_helper(topic, session)
+    # Find all topics that are not in the provided topic list
+    topic_statement = select(Topics).where(not_(Topics.name.in_(topic_data.name)))
+    topic_result = session.exec(topic_statement).unique().all()
+
+    for y in topic_result:
+        todo_statement = select(ToDo).where(ToDo.topic_id == y.topic_id)
+        todo_result = session.exec(todo_statement).unique().all()
+
+        for x in todo_result:
+            bearbeiter_statement = select(Bearbeiter).where(Bearbeiter.todo_id == x.todo_id)
+            delete_helper(bearbeiter_statement, session)
+
+        if todo_result:
+            delete_helper(todo_statement, session)
+
+    delete_helper(topic_statement, session)
+
+    # Create the Topics
+
+    statement = select(Topics.name)
+    result = session.exec(statement).unique().all()
+
+    existing_names = [topic_name for topic_name in result]
+
+    # Find new names that don't exist in the database
+    new_names = [name for name in topic_data.name if name not in existing_names]
+
+    for data in new_names:
+        topic = Topics(name = data)
+        create_helper(topic, session)
+    return {"status: success"}
 
 
 @router.put("/change-topic")
