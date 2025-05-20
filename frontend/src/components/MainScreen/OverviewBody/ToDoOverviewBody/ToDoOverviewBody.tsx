@@ -55,9 +55,14 @@ export default function ToDoOverviewBody({
   } else {
     monday = previousMonday(now);
   }
+  let sunday;
+  if (now.getUTCDay() === 0) {
+    sunday = now;
+  } else {
+    sunday = nextSunday(now);
+  }
 
   const createThisWeekTableHeader = () => {
-    const sunday = nextSunday(new Date());
     let currentDate = monday;
     const tableHeaders = [];
     while (currentDate <= sunday) {

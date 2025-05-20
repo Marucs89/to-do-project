@@ -1,20 +1,38 @@
-import { getTopicIdByName } from "../../../global";
-import { createToDo } from "../../../services/api";
-import type { crateToDoInput } from "../../../services/api";
-import Select, { StylesConfig } from "react-select";
-import makeAnimated from "react-select/animated";
+import Select from "react-select";
 import "./AddToDoBtn.css";
 import "uikit";
 import { useState } from "react";
 import { addWeeks, previousSunday } from "date-fns";
+import { AllTopics } from "../../../schemas/topics";
+import { AllAssignees } from "../../../schemas/assignees";
+import {
+  assigneesSelectStyles,
+  topicsSelectStyles,
+  animatedComponent,
+} from "./selectConfig";
+import { crateToDoInput, createToDo } from "../../../services/api";
+import { status_ids } from "../../../global";
 
-export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
-  const animatedComponent = makeAnimated();
-
-  // const currentAssigneesId = getAssigneesByName();
-  const [toDoDate, setToDoDate] = useState<string | undefined>();
+export default function AddToDoBtn({
+  allTopics,
+  allAssignees,
+}: {
+  allTopics: AllTopics;
+  allAssignees: AllAssignees;
+}) {
+  const [toDoTopic, setToDoTopic] = useState<
+    | {
+        label: string;
+        value: number;
+      }
+    | undefined
+  >();
+  const [toDoName, setToDoName] = useState("");
+  const [toDoDescription, setToDoDescription] = useState("");
+  const [toDoDeadline, setToDoDeadline] = useState<string | undefined>();
+  const [toDoAssignees, setToDoAssignees] =
+    useState<{ value: number; label: string }[]>();
   const now = new Date();
-
   const minDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
     2,
     "0"
@@ -24,61 +42,13 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
     maxDateObject.getMonth() + 1
   ).padStart(2, "0")}-${String(maxDateObject.getDate()).padStart(2, "0")}`;
 
-  const input: crateToDoInput = {
-    name: "test",
-    description: "tessttt",
-    mitarbeiter_id: 2,
-  };
-
-  let currentTopicIndex = 0;
-
-  const allTopics = ["Freizeit", "Arbeit", "Schule", "Sport"];
-  const assigneesOptions = [
-    { value: "Finn", label: "Finn" },
-    { value: "Marcel", label: "Marcel" },
-    { value: "Jonas", label: "Jonas" },
-    { value: "Marcus", label: "Marcus" },
-  ];
-
-  type TAssigneesOptions = typeof assigneesOptions;
-  const assigneesSelectStyles: StylesConfig<TAssigneesOptions> = {
-    control: (styles) => {
-      return {
-        ...styles,
-        width: "250px",
-        ":hover": { cursor: "pointer" },
-      };
-    },
-    option: (styles) => {
-      return {
-        ...styles,
-        color: "black",
-        cursor: "pointer",
-        justifySelf: "center",
-      };
-    },
-  };
-
-  const topicOptions = allTopics.map((topic, i) => {
-    if (topic === currentTopic) currentTopicIndex = i;
-    return { value: topic, label: topic };
+  const assigneesOptions = allAssignees.map((assignee) => {
+    return { value: assignee.mitarbeiter_id, label: assignee.name };
   });
 
-  type TTopicOptiones = typeof topicOptions;
-
-  const topicsSelectStyles: StylesConfig<TTopicOptiones> = {
-    control: (styles) => {
-      return { ...styles, width: "11rem", ":hover": { cursor: "pointer" } };
-    },
-    option: (styles) => {
-      return {
-        ...styles,
-        color: "black",
-        cursor: "pointer",
-        justifySelf: "center",
-      };
-    },
-  };
+  const topicOptions = allTopics.map((topic) => {
+    return { value: topic.topic_id, label: topic.name };
+  });
 
   return (
     <div>
@@ -93,39 +63,46 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
             <div id='topic'>
               <h2 className='headline'>Topic:</h2>
               <Select
-                //@ts-expect-error Bullshit
                 styles={topicsSelectStyles}
+                //@ts-expect-error Bullshits
                 options={topicOptions}
                 components={animatedComponent}
-                defaultValue={topicOptions[currentTopicIndex]}
-                onChange={(event) => {
-                  console.log("event: ", event);
-                  const currentTopicId = getTopicIdByName(currentTopic);
+                onChange={(topic) => {
+                  //@ts-expect-error bullshit
+                  setToDoTopic(topic);
                 }}
               />
             </div>
             <div id='name'>
               <h2 className='headline'>Name:</h2>
-              <input type='text' id='nameInput' placeholder='add an Name' />
+              <input
+                type='text'
+                id='nameInput'
+                placeholder='add a Name'
+                onChange={({ target: { value: name } }) => {
+                  setToDoName(name);
+                }}
+              />
             </div>
             <div id='description'>
               <h2 className='headline'>Description:</h2>
               <textarea
                 id='descriptionInput'
-                placeholder='add an description'
+                placeholder='add a description'
+                onChange={({ target: { value: description } }) => {
+                  setToDoDescription(description);
+                }}
               ></textarea>
             </div>
             <div id='date'>
-              <h2 className='headline'>Date</h2>
-
+              <h2 className='headline'>Deadline</h2>
               <input
                 type='date'
                 id='dateInput'
                 min={minDate}
                 max={maxDate}
-                onChange={({ target: { value } }) => {
-                  console.log("date: ", value);
-                  setToDoDate(value);
+                onChange={({ target: { value: deadline } }) => {
+                  setToDoDeadline(deadline);
                 }}
               />
             </div>
@@ -137,15 +114,39 @@ export default function AddToDoBtn({ currentTopic }: { currentTopic: string }) {
                 options={assigneesOptions}
                 components={animatedComponent}
                 isMulti
+                onChange={(assignees) => {
+                  //@ts-expect-error Bullshit
+                  setToDoAssignees(assignees);
+                }}
               />
             </div>
             <div id='submit'>
               <button
                 id='submitBtn'
                 className='submitBtn'
-                type='submit'
-                onClick={() => {
-                  createToDo(input);
+                onClick={async () => {
+                  if (!toDoTopic?.value) {
+                    throw new Error("No Topic id is set!!!");
+                  }
+                  if (!toDoDeadline) {
+                    throw new Error("No Deadine is set!!!");
+                  }
+                  if (!toDoAssignees) {
+                    throw new Error("No Assignee/s is/are set!!!");
+                  }
+                  const assignees = toDoAssignees.map((assignee) => {
+                    return assignee.value;
+                  });
+                  const input: crateToDoInput = {
+                    topic_id: toDoTopic?.value,
+                    name: toDoName,
+                    description: toDoDescription,
+                    deadline: toDoDeadline,
+                    mitarbeiter_id: assignees,
+                    status_id: 1, //open status
+                  };
+                  const resp = await createToDo(input);
+                  console.log("resp: ", resp);
                 }}
               >
                 Create To Do

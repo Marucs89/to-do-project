@@ -8,7 +8,8 @@ export interface crateToDoInput {
   description: string;
   topic_id: number;
   status_id: number;
-  mitarbeiter_id: number[] | number;
+  mitarbeiter_id: number[];
+  deadline: string;
 }
 
 export async function getToDoDataForTopic(topic: string) {

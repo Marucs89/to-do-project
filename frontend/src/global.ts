@@ -1,14 +1,7 @@
-export function getTopicIdByName(topicName: string) {
-  switch (topicName) {
-    case "Freizeit":
-      return 1;
-    case "Arbeit":
-      return 2;
-    case "Schule":
-      return 3;
-    case "Sport":
-      return 4;
-  }
+export const status_ids = {
+  1: "offen",
+  2: "in arbeit",
+  3: "abgeschlossen"
 }
 
 

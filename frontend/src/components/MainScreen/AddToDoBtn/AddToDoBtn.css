@@ -8,7 +8,7 @@
     place-content: center;
     color: white;
     text-shadow: 0 1px 0 #000;
-
+    border: solid 2px white;
     --border-angle: 0turn; 
     --main-bg: conic-gradient(
         from var(--border-angle),
@@ -18,21 +18,20 @@
         rgb(52, 24, 79) 95%
       );
 
-
-    border: solid 2px white;
     border-radius: 2em;
-    --gradient-border: conic-gradient(from var(--border-angle), transparent 89%, #08f, #f03 99%, transparent);
-      
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 89%, rgb(170, 215, 255), rgb(255, 184, 198) 99%, transparent);
+    --gradient-hover-border: conic-gradient(from var(--border-angle), transparent 89%, #08f, #f03 99%, transparent);
     background: 
     var(--gradient-border) border-box;
 
-  
     background-position: center center;
 
     animation: bg-spin 3s linear infinite;
     
     &:hover{
-
+      background-position: center center;
+      background: 
+        var(--gradient-hover-border) border-box;
         cursor: pointer;
     }
 }
