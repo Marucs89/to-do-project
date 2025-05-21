@@ -76,12 +76,21 @@ def read_todos_by_topic(topic: str, session: SessionDep):
     """
     result = TodoRepository.get_by_topic(session, topic)
     if not result:
-        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der todo liste gefunden")
-    todos = TodoRepository.get_by_id(session, result)
+        raise HTTPException(status_code=404, detail=f"Topic '{topic}' nicht in der topics Liste gefunden")
+    todos = TodoRepository.get_todo_by_topicid(session, result)
     if not todos:
-        raise HTTPException(status_code=404, detail=f"'{topic}' nicht in todo liste gefunden")
+        raise HTTPException(status_code=404, detail=f"Das Topic '{topic}' konnte nicht in der todo liste gefunden")
     return read_todo_helper(todos)
 
+@router.get("/todos-by-topicid")
+def read_todos_by_topicid(topicid: int, session: SessionDep):
+    result = TodoRepository.get_by_topicid(session, topicid)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Topic mit der ID: '{topicid}' konnte nicht in der topics Liste gefunden werden")
+    todos = TodoRepository.get_by_id(session, topicid)
+    if not todos:
+        raise HTTPException(status_code=404, detail=f"Topic mit der ID: '{topicid}' konnte nicht in der todo Liste gefunden werden")
+    return read_todo_helper(todos)
 
 @router.put("/change-todo", response_model= StandardResponse)
 def update_todo(new_todo: TodoUpdate, session: SessionDep):
