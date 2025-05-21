@@ -11,7 +11,6 @@ import {
   animatedComponent,
 } from "./selectConfig";
 import { crateToDoInput, createToDo } from "../../../services/api";
-import { status_ids } from "../../../global";
 
 export default function AddToDoBtn({
   allTopics,
@@ -137,6 +136,7 @@ export default function AddToDoBtn({
                   const assignees = toDoAssignees.map((assignee) => {
                     return assignee.value;
                   });
+
                   const input: crateToDoInput = {
                     topic_id: toDoTopic?.value,
                     name: toDoName,
@@ -145,8 +145,7 @@ export default function AddToDoBtn({
                     mitarbeiter_id: assignees,
                     status_id: 1, //open status
                   };
-                  const resp = await createToDo(input);
-                  console.log("resp: ", resp);
+                  await createToDo(input);
                 }}
               >
                 Create To Do

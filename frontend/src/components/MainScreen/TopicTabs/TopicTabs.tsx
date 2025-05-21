@@ -12,7 +12,6 @@ export default function TopicTabs({
   setTopic: React.Dispatch<React.SetStateAction<AllTopics[0]>>;
   allTopics: AllTopics;
 }) {
-  //TODO: Iterate over
   return (
     <div id='tabBar'>
       {allTopics.map((topic) => {
@@ -22,6 +21,7 @@ export default function TopicTabs({
             onClick={async () => {
               setTopic(topic);
               const toDoData = await getToDoDataForTopic(topic.name);
+              console.log("ToDoData: ", toDoData);
               setToDoData(toDoData);
             }}
           >

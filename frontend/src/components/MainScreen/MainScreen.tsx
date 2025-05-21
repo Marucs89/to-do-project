@@ -24,16 +24,16 @@ export default function MainScreen() {
 
   //TODO: fetch all Mitarbeiter and Topic and store dem in a usestate + delete default useState value
   const [allTopics, setAllTopics] = useState<AllTopics>([
-    { topic_id: 1, name: "Freizeit" },
-    { topic_id: 2, name: "Arbeit" },
-    { topic_id: 3, name: "Schule" },
-    { topic_id: 4, name: "Sport" },
+    { topic_id: 7, name: "Freizeit" },
+    { topic_id: 6, name: "Arbeit" },
+    { topic_id: 8, name: "Schule" },
+    { topic_id: 9, name: "Sport" },
   ]);
 
   const [allAssignees, setAllAssignees] = useState<AllAssignees>([
-    { mitarbeiter_id: 1, name: "Marcus" },
+    { mitarbeiter_id: 3, name: "Marcus" },
     { mitarbeiter_id: 2, name: "Marcel" },
-    { mitarbeiter_id: 3, name: "Finn" },
+    { mitarbeiter_id: 1, name: "Finn" },
     { mitarbeiter_id: 4, name: "Jonas" },
   ]);
 
