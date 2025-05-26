@@ -203,8 +203,8 @@ export default function Modal({
               defaultValue={toDoAssignees}
               onChange={(assignees) => {
                 //@ts-expect-error Bullshit
-                toDoAssignees = assignees;
-                // setToDoAssignees(assignee s);
+
+                setToDoAssignees(assignees);
               }}
             ></Select>
           </div>
