@@ -104,13 +104,12 @@ def update_arbeiter(new_mitarbeiter: ArbeiterUpdate, session: SessionDep):
         3. Replace the current worker ID with the new worker ID
         4. Return success status when all updates are complete
     """
-    index = 0
-    for current_worker_id in new_mitarbeiter.mitarbeiter_id:
-        statement = select(Bearbeiter).where((Bearbeiter.todo_id == new_mitarbeiter.todo_id)
-                                         & (Bearbeiter.mitarbeiter_id == current_worker_id))
-        new_worker_id = new_mitarbeiter.new_mitarbeiter_id[index]
-        index += 1
-        change_helper(session, statement, 'mitarbeiter_id', new_worker_id, True, Arbeiter)
+    for data in new_mitarbeiter.mitarbeiter_id:
+        statement = select(Bearbeiter).where(Bearbeiter.todo_id == new_mitarbeiter.todo_id)
+        delete_helper(statement, session)
+    for create_data in new_mitarbeiter.mitarbeiter_id:
+        create_jipi = Bearbeiter(todo_id = new_mitarbeiter.todo_id, mitarbeiter_id = create_data)
+        create_helper(create_jipi, session)
     return {"status": "success"}
 
 
