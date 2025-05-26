@@ -70,11 +70,9 @@ class ArbeiterUpdate(BaseModel):
     Attributes:
         todo_id: ID of the ToDo to update
         mitarbeiter_id: List of current employee IDs to be updated
-        new_mitarbeiter_id: List of new employee IDs to assign
     """
     todo_id: int
     mitarbeiter_id: list[int] = []
-    new_mitarbeiter_id: list[int] = []
 
 class TopicUpdate(BaseModel):
     """
