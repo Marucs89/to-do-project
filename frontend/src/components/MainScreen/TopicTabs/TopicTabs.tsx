@@ -23,6 +23,7 @@ export default function TopicTabs({
     >
   >;
 }) {
+  
   useEffect(() => {
     if (!allTopics) return;
     setTopic(allTopics[0]);

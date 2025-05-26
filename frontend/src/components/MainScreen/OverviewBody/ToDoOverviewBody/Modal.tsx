@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { status_ids } from "../../../../global";
 import { AllAssignees } from "../../../../schemas/assignees";
 import { ToDos } from "../../../../schemas/to-do";
 import { AllTopics } from "../../../../schemas/topics";
-import { updateToDo, updateToDoInput } from "../../../../services/api";
+import {
+  deleteToDo,
+  updateToDo,
+  updateToDoInput,
+} from "../../../../services/api";
 import {
   animatedComponent,
   assigneesSelectStyles,
@@ -31,17 +35,36 @@ export default function Modal({
     2,
     "0"
   )}`;
+
   const [toDoDeadline, setToDoDeadline] = useState<string>(
     formattedToDoDeadline
   );
   const [toDoName, setToDoName] = useState(toDo.name);
+
   const [toDoDescription, setToDoDescription] = useState(toDo.description);
+
   const [toDoAssignees, setToDoAssignees] = useState(
     toDo.arbeiter.map((assignee) => {
       return { label: assignee.name, value: assignee.mitarbeiter_id };
     })
   );
+
   const [toDoStatus, setToDoStatus] = useState(toDo.status);
+
+  useEffect(() => {
+    setToDoName(toDo.name);
+    setToDoAssignees(
+      toDo.arbeiter.map((assignee) => ({
+        label: assignee.name,
+        value: assignee.mitarbeiter_id,
+      }))
+    );
+    setToDoDeadline(formattedToDoDeadline);
+    setToDoDescription(toDo.description);
+    setToDoTopic(toDo.topic);
+    setToDoStatus(toDo.status);
+  }, [toDo.todo_id]);
+
   const now = new Date();
   const currentDate = `${now.getFullYear()}-${String(
     now.getMonth() + 1
@@ -54,9 +77,10 @@ export default function Modal({
   const handleClose = () => {
     setToDoName(toDo.name);
     setToDoAssignees(
-      toDo.arbeiter.map((assignee) => {
-        return { label: assignee.name, value: assignee.mitarbeiter_id };
-      })
+      toDo.arbeiter.map((assignee) => ({
+        label: assignee.name,
+        value: assignee.mitarbeiter_id,
+      }))
     );
     setToDoDeadline(formattedToDoDeadline);
     setToDoDescription(toDo.description);
@@ -68,15 +92,18 @@ export default function Modal({
     modalDialog.close();
   };
 
-  console.log(
-    "States: ",
-    toDoTopic,
-    toDoName,
-    toDoDeadline,
-    toDoAssignees,
-    toDoDescription,
-    toDoStatus
-  );
+  const handleDelete = async () => {
+    await deleteToDo(toDo.todo_id);
+    const modalDialog = document.getElementById(
+      `modal-${toDo.todo_id}`
+    ) as HTMLDialogElement;
+    modalDialog.close();
+    const topicTabElement = document.getElementById(
+      "topic-tab-" + String(toDo.topic.topic_id)
+    );
+    topicTabElement?.click();
+  };
+
   return (
     <dialog id={`modal-${toDo.todo_id}`} className='modalDialog'>
       <div id='modalCloseBtnForm'>
@@ -154,7 +181,6 @@ export default function Modal({
             defaultValue={toDoDeadline}
             style={{ height: "1.5rem", width: "39%" }}
             onChange={({ target: { value: deadline } }) => {
-              console.log("new Deadline: ", deadline);
               setToDoDeadline(deadline);
             }}
           />
@@ -177,7 +203,8 @@ export default function Modal({
               defaultValue={toDoAssignees}
               onChange={(assignees) => {
                 //@ts-expect-error Bullshit
-                setToDoAssignees(assignees);
+                toDoAssignees = assignees;
+                // setToDoAssignees(assignee s);
               }}
             ></Select>
           </div>
@@ -212,29 +239,47 @@ export default function Modal({
             </select>
           </div>
         </div>
-        <div id='submit' style={{ width: "90%" }}>
-          <button
-            id='submitBtn'
-            className='submitBtn'
-            onClick={async () => {
-              //TODO: handle assignees change!
-              // const assignees = toDoAssignees.map((assignee) => {
-              //   return assignee.value;
-              // });
-              const toDoinput: updateToDoInput = {
-                todo_id: toDo.todo_id,
-                topic_id: toDoTopic.topic_id,
-                name: toDoName,
-                description: toDoDescription,
-                deadline: toDoDeadline,
-                status_id: toDoStatus.status_id,
-              };
-              await updateToDo(toDoinput);
-              window.location.reload();
-            }}
-          >
-            Update To Do
-          </button>
+        <div id='submitAndDelete' style={{ width: "100%" }}>
+          <div id='submit' style={{ width: "100%" }}>
+            <button
+              id='submitBtn'
+              className='submitBtn'
+              onClick={async () => {
+                //TODO: handle assignees change!
+                // const assignees = toDoAssignees.map((assignee) => {
+                //   return assignee.value;
+                // });
+
+                const toDoinput: updateToDoInput = {
+                  todo_id: toDo.todo_id,
+                  topic_id: toDoTopic.topic_id,
+                  name: toDoName,
+                  description: toDoDescription,
+                  deadline: toDoDeadline,
+                  status_id: toDoStatus.status_id,
+                };
+                await updateToDo(toDoinput);
+
+                const modalDialog = document.getElementById(
+                  `modal-${toDo.todo_id}`
+                ) as HTMLDialogElement;
+
+                const topicTabElement = document.getElementById(
+                  "topic-tab-" + String(toDo.topic.topic_id)
+                );
+
+                modalDialog.close();
+                topicTabElement?.click();
+              }}
+            >
+              Update To Do
+            </button>
+          </div>
+          <div id='delete' style={{ width: "90%", marginBottom: "7%" }}>
+            <button id='deleteBtn' className='submitBtn' onClick={handleDelete}>
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </dialog>

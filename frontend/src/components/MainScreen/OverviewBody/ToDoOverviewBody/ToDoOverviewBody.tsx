@@ -1,13 +1,13 @@
-import "./ToDoOverviewBody.css";
-import { ToDos } from "../../../../schemas/to-do";
 import { addDays, format, nextSunday, previousMonday } from "date-fns";
+import useEmblaCarousel from "embla-carousel-react";
 import _ from "lodash";
+import { JSX, useCallback, useEffect, useState } from "react";
+import { AllAssignees } from "../../../../schemas/assignees";
+import { ToDos } from "../../../../schemas/to-do";
+import { AllTopics } from "../../../../schemas/topics";
 import { createMarkerForTask } from "./helper";
 import Modal from "./Modal";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { AllTopics } from "../../../../schemas/topics";
-import { AllAssignees } from "../../../../schemas/assignees";
+import "./ToDoOverviewBody.css";
 
 export default function ToDoOverviewBody({
   toDos,
@@ -31,6 +31,10 @@ export default function ToDoOverviewBody({
 
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
+  const [tableData, setTableData] = useState<{
+    tableHeader: JSX.Element[];
+    tableBody: JSX.Element[];
+  }>();
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -44,7 +48,7 @@ export default function ToDoOverviewBody({
     emblaApi.on("select", onSelect);
   }, [emblaApi, onSelect]);
 
-  const tableData = useMemo(() => {
+  useEffect(() => {
     const now = new Date();
     let monday;
     if (now.getUTCDay() === 1) {
@@ -136,9 +140,12 @@ export default function ToDoOverviewBody({
       }
       return tableBodys;
     };
-    return {
+    setTableData({
       tableHeader: createWeekTableHeader(),
       tableBody: createWeekTableBody(toDos),
+    });
+    return () => {
+      console.log("Cleanup effect");
     };
   }, [toDos]);
 
@@ -153,10 +160,10 @@ export default function ToDoOverviewBody({
             }}
           >
             <thead>
-              <tr>{tableData.tableHeader}</tr>
+              <tr>{tableData?.tableHeader}</tr>
             </thead>
             <tbody>
-              <tr>{tableData.tableBody}</tr>
+              <tr>{tableData?.tableBody}</tr>
             </tbody>
           </table>
         </div>

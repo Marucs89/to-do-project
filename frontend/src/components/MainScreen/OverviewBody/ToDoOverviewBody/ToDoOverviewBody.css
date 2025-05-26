@@ -137,6 +137,13 @@ th > p {
   }
 }
 
+#submitAndDelete{
+  display: flex;
+  align-items: center;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
 .modalDialog {
   background-color: #212121;
   border: none;

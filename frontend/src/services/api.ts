@@ -24,6 +24,8 @@ export type changeArbeiterInput = {
   new_mitarbeiter_id: number[];
 };
 
+export type deleteToDoInput = number;
+
 export async function getToDoDataForTopic(topic: string) {
   const resp = await axios
     .get(`${localHostURL}/todos-by-topic?topic=${topic}`)
@@ -82,6 +84,17 @@ export async function updateToDoAssignees(input: changeArbeiterInput) {
   let successful = true;
   await axios
     .put(`${localHostURL}/change-arbeiter`, input)
+    .catch((error: unknown) => {
+      console.log("Error: ", error);
+      successful = false;
+    });
+  return { successful };
+}
+
+export async function deleteToDo(todo_id: deleteToDoInput) {
+  let successful = true;
+  await axios
+    .delete(`${localHostURL}/delete-todo?todo_id=${todo_id}`)
     .catch((error: unknown) => {
       console.log("Error: ", error);
       successful = false;
