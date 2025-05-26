@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TopicTabs from "./TopicTabs/TopicTabs";
 import { ToDos } from "../../schemas/to-do";
 import ToDoOverviewBody from "./OverviewBody/ToDoOverviewBody/ToDoOverviewBody";
@@ -6,36 +6,23 @@ import "./mainscreen.css";
 import AddToDoBtn from "./AddToDoBtn/AddToDoBtn";
 import { AllTopics } from "../../schemas/topics";
 import { AllAssignees } from "../../schemas/assignees";
-
-//after implementation of datafetching of topics => deprecated
-export enum Topics {
-  Freizeit = "Freizeit",
-  Arbeit = "Arbeit",
-  Schule = "Schule",
-  Sport = "Sport",
-}
+import { getAllAssignees, getAllTopics } from "../../services/api";
 
 export default function MainScreen() {
   const [toDoData, setToDoData] = useState<ToDos>();
-  const [topic, setTopic] = useState<AllTopics[0]>({
-    name: "Freizeit",
-    topic_id: 1,
-  });
-
-  //TODO: fetch all Mitarbeiter and Topic and store dem in a usestate + delete default useState value
-  const [allTopics, setAllTopics] = useState<AllTopics>([
-    { topic_id: 7, name: "Freizeit" },
-    { topic_id: 6, name: "Arbeit" },
-    { topic_id: 8, name: "Schule" },
-    { topic_id: 9, name: "Sport" },
-  ]);
-
-  const [allAssignees, setAllAssignees] = useState<AllAssignees>([
-    { mitarbeiter_id: 3, name: "Marcus" },
-    { mitarbeiter_id: 2, name: "Marcel" },
-    { mitarbeiter_id: 1, name: "Finn" },
-    { mitarbeiter_id: 4, name: "Jonas" },
-  ]);
+  const [allTopics, setAllTopics] = useState<AllTopics>();
+  const [topic, setTopic] = useState<AllTopics[0]>();
+  const [allAssignees, setAllAssignees] = useState<AllAssignees>();
+  useEffect(() => {
+    const fetchTopics = async () => {
+      setAllTopics(await getAllTopics());
+    };
+    const fetchAssignees = async () => {
+      setAllAssignees(await getAllAssignees());
+    };
+    fetchTopics();
+    fetchAssignees();
+  }, []);
 
   return (
     <div id='mainscreen'>
@@ -43,12 +30,17 @@ export default function MainScreen() {
         <AddToDoBtn allTopics={allTopics} allAssignees={allAssignees} />
         <TopicTabs
           setToDoData={setToDoData}
-          setTopic={setTopic}
           allTopics={allTopics}
+          topic={topic}
+          setTopic={setTopic}
         />
       </div>
       <div id='rightSideArea'>
-        <ToDoOverviewBody toDos={toDoData} />
+        <ToDoOverviewBody
+          toDos={toDoData}
+          allTopics={allTopics}
+          allAssignees={allAssignees}
+        />
       </div>
     </div>
   );

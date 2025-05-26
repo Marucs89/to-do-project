@@ -116,3 +116,115 @@ th > p {
     --border-angle: 1turn;
   }
 }
+
+#modalCloseBtnForm{
+  position: absolute;
+  right: 3%;
+  top: 3%;
+  margin: 0;
+  width: 24px;
+  height: 24px;
+  align-content: center;
+  justify-content: center;
+}
+
+#modalCloseBtn{
+  width: 24px;
+  height: 24px;
+  padding: 0px;
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+.modalDialog {
+  background-color: #212121;
+  border: none;
+  /* flex-direction: column; */ 
+  width: 35%;
+}
+
+#name, #topic, #description, #submit {
+  padding-bottom: 8%;
+  width: 90%;
+}
+
+#topicSelect{
+  width: 40%;
+  height: 2.5rem;
+  text-align: center;
+  font-size: 16px;
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+h2{
+  color: white
+}
+
+#modalContent{
+  padding-top: 9%;
+  padding-left: 9%;
+  color: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20%
+}
+#headline{
+  margin-left: 10%;
+  color: whitesmoke;
+}
+
+
+#submit{
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+}
+
+.submitBtn{
+  padding: 2%
+}
+.css-1dyz3mf > div{
+  width: 60% !important;
+}
+
+.css-1b757j3{
+  width: auto !important;
+}
+.css-v7duua{
+  color: black;
+  position: absolute;
+  left: 45%;
+  padding-top: 3%;
+  padding-bottom: 3%;
+}
+#assignees{
+  justify-items: start !important;
+  margin-top: 0 !important;
+  margin-bottom: 4% !important;
+  width: 70% !important;
+}
+
+#assigneesAndStatus{
+  display: flex;
+  padding-top: 10%;
+  align-items: center;
+}
+
+#status{
+  width: 25%;
+}
+#statusSelect{
+  padding-left: 5%;
+  width: 100%;
+  height: 2.5rem;
+  font-size: 18px;
+  font-family: Arial;
+  &:hover{
+    cursor: pointer;
+  }
+}

@@ -1,11 +1,7 @@
 import MainScreen from "./components/MainScreen/MainScreen";
 
 function App() {
-  return (
-    <>
-      <MainScreen />
-    </>
-  );
+  return <MainScreen />;
 }
 
 export default App;

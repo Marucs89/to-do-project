@@ -16,8 +16,8 @@ export default function AddToDoBtn({
   allTopics,
   allAssignees,
 }: {
-  allTopics: AllTopics;
-  allAssignees: AllAssignees;
+  allTopics: AllTopics | undefined;
+  allAssignees: AllAssignees | undefined;
 }) {
   const [toDoTopic, setToDoTopic] = useState<
     | {
@@ -41,11 +41,11 @@ export default function AddToDoBtn({
     maxDateObject.getMonth() + 1
   ).padStart(2, "0")}-${String(maxDateObject.getDate()).padStart(2, "0")}`;
 
-  const assigneesOptions = allAssignees.map((assignee) => {
+  const assigneesOptions = allAssignees?.map((assignee) => {
     return { value: assignee.mitarbeiter_id, label: assignee.name };
   });
 
-  const topicOptions = allTopics.map((topic) => {
+  const topicOptions = allTopics?.map((topic) => {
     return { value: topic.topic_id, label: topic.name };
   });
 
@@ -101,6 +101,7 @@ export default function AddToDoBtn({
                 min={minDate}
                 max={maxDate}
                 onChange={({ target: { value: deadline } }) => {
+                  console.log("deadline: ", deadline);
                   setToDoDeadline(deadline);
                 }}
               />
