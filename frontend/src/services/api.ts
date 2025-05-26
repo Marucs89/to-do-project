@@ -18,10 +18,9 @@ export type updateToDoInput = Omit<crateToDoInput, "mitarbeiter_id"> & {
   todo_id: number;
 };
 
-export type changeArbeiterInput = {
+export type changeAssigneesInput = {
   todo_id: number;
   mitarbeiter_id: number[];
-  new_mitarbeiter_id: number[];
 };
 
 export type deleteToDoInput = number;
@@ -80,7 +79,7 @@ export async function updateToDo(input: updateToDoInput) {
   return { successful };
 }
 
-export async function updateToDoAssignees(input: changeArbeiterInput) {
+export async function updateToDoAssignees(input: changeAssigneesInput) {
   let successful = true;
   await axios
     .put(`${localHostURL}/change-arbeiter`, input)

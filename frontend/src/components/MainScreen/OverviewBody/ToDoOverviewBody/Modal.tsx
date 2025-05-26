@@ -5,8 +5,10 @@ import { AllAssignees } from "../../../../schemas/assignees";
 import { ToDos } from "../../../../schemas/to-do";
 import { AllTopics } from "../../../../schemas/topics";
 import {
+  changeAssigneesInput,
   deleteToDo,
   updateToDo,
+  updateToDoAssignees,
   updateToDoInput,
 } from "../../../../services/api";
 import {
@@ -203,7 +205,6 @@ export default function Modal({
               defaultValue={toDoAssignees}
               onChange={(assignees) => {
                 //@ts-expect-error Bullshit
-
                 setToDoAssignees(assignees);
               }}
             ></Select>
@@ -245,10 +246,14 @@ export default function Modal({
               id='submitBtn'
               className='submitBtn'
               onClick={async () => {
-                //TODO: handle assignees change!
-                // const assignees = toDoAssignees.map((assignee) => {
-                //   return assignee.value;
-                // });
+                const assignees = toDoAssignees.map((assignee) => {
+                  return assignee.value;
+                });
+
+                const assigneesInput: changeAssigneesInput = {
+                  todo_id: toDo.todo_id,
+                  mitarbeiter_id: assignees,
+                };
 
                 const toDoinput: updateToDoInput = {
                   todo_id: toDo.todo_id,
@@ -259,6 +264,7 @@ export default function Modal({
                   status_id: toDoStatus.status_id,
                 };
                 await updateToDo(toDoinput);
+                await updateToDoAssignees(assigneesInput);
 
                 const modalDialog = document.getElementById(
                   `modal-${toDo.todo_id}`
@@ -267,7 +273,6 @@ export default function Modal({
                 const topicTabElement = document.getElementById(
                   "topic-tab-" + String(toDo.topic.topic_id)
                 );
-
                 modalDialog.close();
                 topicTabElement?.click();
               }}
