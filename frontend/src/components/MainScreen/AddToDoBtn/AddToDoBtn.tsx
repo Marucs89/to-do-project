@@ -101,7 +101,6 @@ export default function AddToDoBtn({
                 min={minDate}
                 max={maxDate}
                 onChange={({ target: { value: deadline } }) => {
-                  console.log("deadline: ", deadline);
                   setToDoDeadline(deadline);
                 }}
               />

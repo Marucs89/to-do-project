@@ -31,8 +31,6 @@ export async function getToDoDataForTopic(topic: string) {
     .catch((error: unknown) => {
       console.log("Error: ", error);
     });
-  console.log("Raw Data: ", resp?.data);
-  console.log("data: ", resp?.data);
   return resp?.data ? ToDoSchema.parse(resp?.data) : [];
 }
 
@@ -54,7 +52,6 @@ export async function getAllTopics() {
     .catch((error: unknown) => {
       console.log("Error: ", error);
     });
-  console.log("All topics: ", resp?.data);
   return resp?.data ? AllTopicsSchema.parse(resp?.data) : [];
 }
 
@@ -64,7 +61,6 @@ export async function getAllAssignees() {
     .catch((error: unknown) => {
       console.log("Error: ", error);
     });
-  console.log("All assignees: ", resp?.data);
   return resp?.data ? AllAssigneesSchema.parse(resp?.data) : [];
 }
 

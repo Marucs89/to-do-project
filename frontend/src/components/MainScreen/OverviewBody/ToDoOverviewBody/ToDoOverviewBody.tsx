@@ -7,7 +7,7 @@ import {
 } from "date-fns";
 import useEmblaCarousel from "embla-carousel-react";
 import _ from "lodash";
-import { useCallback, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import { AllAssignees } from "../../../../schemas/assignees";
 import { ToDos } from "../../../../schemas/to-do";
 import { AllTopics } from "../../../../schemas/topics";
@@ -38,7 +38,7 @@ export default function ToDoOverviewBody({
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
   let count = 0;
-  let weekTableSlides = [];
+  const weekTableSlides: ReactElement[] = [];
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setPrevBtnEnabled(emblaApi.canScrollPrev());
@@ -179,9 +179,7 @@ export default function ToDoOverviewBody({
       createToDosTable(nextMondayAfter);
     }
   };
-
   createToDosTable(currentMonday);
-  console.log("test: ", weekTableSlides);
   return (
     <div className='tableContainer embla' ref={emblaRef}>
       <div className='embla__container'>
